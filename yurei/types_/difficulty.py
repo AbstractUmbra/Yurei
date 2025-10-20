@@ -1,0 +1,40 @@
+from typing import TypedDict
+
+
+class Difficulty(TypedDict):
+    difficulty: int
+    nameKey: str
+    descriptionKey: str
+    sanityPillRestorationAmount: int
+    startingSanity: int
+    sanityDrain: float
+    sprinting2: int
+    flashlights: bool
+    loseItemsOnDeath: bool
+    playerSpeed: int
+    evidenceGiven: int
+    changingFavouriteRoom: int
+    interactionAmount: int
+    eventFrequency: int
+    huntDuration: int
+    gracePeriod: int
+    fingerprintChance: int
+    fingerprintDuration: int
+    friendlyGhost: bool
+    killsExtendHuntDuration: int
+    roamingFrequency: int
+    ghostSpeed: int
+    setupTime: int
+    selectedWeather: int
+    amountOfDoorsOpen: int
+    amountOfHidingPlaces: int
+    sanityMonitor: bool
+    activityMonitor: bool
+    fuseBoxVisibleOnMap: bool
+    fuseBoxStartPower: int
+    cursedPossessionsQuantity: int
+    chosenCursedItems: list[int]
+    overrideMultiplier: int
+    actualWeather: int
+    actualCursedItems: list[int]
+    itemTiers: list[str]

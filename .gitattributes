@@ -1,0 +1,4 @@
+* text=auto
+*.py text eof=lf
+*.json text eof=lf
+*.tcss linguist-language=css
