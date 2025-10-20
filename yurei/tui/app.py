@@ -52,6 +52,8 @@ class YureiApp(App[None]):
         Binding("ctrl+w", "save_file", "Save the current edits to the selected file", priority=True),
     ]
     CSS_PATH = "../../css/layout.tcss"
+    TITLE = "Yurei"
+    SUB_TITLE = "A Phasmophobia Save editor"
 
     def compose(self) -> ComposeResult:
         self.debounce_timer = None

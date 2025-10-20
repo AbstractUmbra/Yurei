@@ -850,7 +850,7 @@ wheels = [
 [[package]]
 name = "yurei"
 version = "0.0.1"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "pycryptodome" },
     { name = "textual", extra = ["syntax"] },
@@ -859,6 +859,9 @@ dependencies = [
 [package.optional-dependencies]
 speed = [
     { name = "orjson" },
+]
+web = [
+    { name = "textual-serve" },
 ]
 
 [package.dev-dependencies]
@@ -872,8 +875,9 @@ requires-dist = [
     { name = "orjson", marker = "extra == 'speed'", specifier = ">=3.11.3" },
     { name = "pycryptodome", specifier = ">=3.23.0" },
     { name = "textual", extras = ["syntax"], specifier = ">=6.3.0" },
+    { name = "textual-serve", marker = "extra == 'web'" },
 ]
-provides-extras = ["speed"]
+provides-extras = ["speed", "web"]
 
 [package.metadata.requires-dev]
 dev = [
