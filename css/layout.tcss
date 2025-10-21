@@ -39,12 +39,35 @@ ToastRack {
     height: 100%;
     background: $panel;
     border: mediumvioletred;
+    layout: grid;
+    grid-columns: 2fr;
+    grid-gutter: 1;
 }
 
-#top-right>Label {
-    width: auto;
+.top-right-placeholder#top-right {
     height: 100%;
-    background: $boost;
+    background: $panel;
+    border: mediumvioletred;
+}
+
+Grid.two-col {
+    grid-size: 2;
+    grid-columns: 20% 30%;
+    grid-gutter: 1 2;  /* row gap 1, column gap 2 */
+    padding: 1 2;
+    width: 100%;
+}
+Grid.gear {
+    grid-size: 2;
+    grid-columns: 1fr 30%;
+    grid-rows: auto;
+    grid-gutter: 1 2;  /* row gap 1, column gap 2 */
+    padding: 1 2;
+    width: 100%;
+}
+
+Grid>Label {
+    text-align: right;
 }
 
 #bottom-right {
@@ -65,4 +88,10 @@ ToastRack {
 #bottom-right>Static {
     height: 100%;
     background: $boost;
+}
+
+.input-row {
+    layout: vertical;
+    row-span: 2;
+    align: left middle;
 }

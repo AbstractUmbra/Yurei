@@ -4,11 +4,24 @@ from typing import TYPE_CHECKING, ClassVar
 from textual import on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Container, VerticalScroll
+from textual.containers import Container, Grid, Horizontal, VerticalScroll
 from textual.validation import Function, Integer, Length
-from textual.widgets import DirectoryTree, Footer, Header, Input, Label, RadioButton, RadioSet, TextArea
+from textual.widgets import (
+    Button,
+    DirectoryTree,
+    Footer,
+    Header,
+    Input,
+    Label,
+    RadioButton,
+    RadioSet,
+    Select,
+    SelectionList,
+    TextArea,
+)
 
-from yurei.save import Save
+from yurei.enums import Equipment
+from yurei.save import EQUIPMENT, Save
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -62,7 +75,7 @@ class YureiApp(App[None]):
             with VerticalScroll(id="left-pane", can_focus=True, can_focus_children=True):
                 yield PathInput()
                 yield SafeDirectoryTree(".", id="open-save-tree")
-            with Container(id="top-right"):
+            with Horizontal(id="top-right"):
                 yield Container(id="top-right-container")
             with Container(id="bottom-right"), VerticalScroll(id="data-pane"):
                 yield TextArea.code_editor(id="decrypted-output", language="json", read_only=True, show_line_numbers=True)
@@ -130,7 +143,7 @@ class YureiApp(App[None]):
 
         await pane.remove_children()
         radio_set = RadioSet(
-            *[RadioButton(item[0], id=item[1]) for item in sorted(self.save_file.ALLOWED_OPERATIONS)], id="methods"
+            *[RadioButton(item[0], id=item[1]) for item in sorted(self.save_file.TUI_ALLOWED_OPERATIONS)], id="methods"
         )
         await pane.mount(radio_set)
         self.set_focus(radio_set)
@@ -142,8 +155,8 @@ class YureiApp(App[None]):
         if message.radio_set.id == "methods":
             match message.pressed.id:
                 case "edit-money":
-                    container = Container(
-                        VerticalScroll(
+                    to_mount = [
+                        Grid(
                             Label("Money:", id="money-label"),
                             Input(
                                 placeholder=f"{self.save_file.money}",
@@ -153,17 +166,95 @@ class YureiApp(App[None]):
                                 id="money-value",
                             ),
                             id="money-scroll",
+                            classes="two-col",
+                        )
+                    ]
+                case "alter-level":
+                    to_mount = [
+                        Grid(
+                            Label("Prestige:", id="prestige-label"),
+                            Input(
+                                placeholder=str(self.save_file.prestige),
+                                type="integer",
+                                validate_on=["blur", "submitted"],
+                                validators=[
+                                    Length(0, 3, failure_description="Must be a minimum of 0 characters"),
+                                    Integer(0, 100, "Level must be a minimum of 0 and maximum of 100"),
+                                ],
+                                id="level-prestige-input",
+                            ),
+                            Label("Level:", id="level-label"),
+                            Input(
+                                placeholder=str(self.save_file.level),
+                                type="integer",
+                                validate_on=["submitted", "blur"],
+                                validators=[
+                                    Length(minimum=0),
+                                    Integer(
+                                        0, 100, failure_description="Prestige cannot be lower than 0 or higher than 100."
+                                    ),
+                                ],
+                                id="level-level-input",
+                            ),
+                            id="level-prestige-grid",
+                            classes="two-col",
                         ),
-                        id="money-editor",
-                    )
+                    ]
+                case "unlock-gear":
+                    items = [(item, item) for item in sorted(EQUIPMENT)]
+                    to_mount = [
+                        Grid(
+                            SelectionList[str](*items, name="Unlock gear tier", id="unlock-gear-selection"),
+                            Horizontal(
+                                Select[int](
+                                    [("One", 1), ("Two", 2), ("Three", 3)],
+                                    id="unlock-gear-tier",
+                                    prompt="Tier",
+                                    allow_blank=False,
+                                ),
+                                Button(
+                                    label="Submit",
+                                    id="unlock-submit-button",
+                                    variant="primary",
+                                    name="Unlock Submit",
+                                    flat=True,
+                                ),
+                                classes="input-row",
+                            ),
+                            id="unlock-gear-grid",
+                            classes="gear",
+                        )
+                    ]
+                case "add-gear":
+                    items = [(item, item) for item in sorted(EQUIPMENT)]
+                    to_mount = [
+                        Grid(
+                            SelectionList[str](*items, name="Set gear amount", id="add-gear-selection"),
+                            Horizontal(
+                                Input(
+                                    placeholder="Amount?",
+                                    id="add-gear-input",
+                                    type="integer",
+                                    validate_on=["blur", "submitted"],
+                                    validators=[Integer(0, 50, failure_description="Gear amount must be between 0 and 50.")],
+                                ),
+                                Button(
+                                    label="Submit", id="add-submit-button", variant="primary", name="Add Submit", flat=True
+                                ),
+                                classes="input-row",
+                            ),
+                            id="add-gear-grid",
+                            classes="gear",
+                        )
+                    ]
                 case _:
                     return
 
-            top_right = self.query_one("#top-right", Container)
-            await top_right.remove_children("#top-right-container")
+            top_right = self.query_one("#top-right", Horizontal)
+            await top_right.remove_children()
 
-            await top_right.mount(container)
-            self.set_focus(container)
+            await top_right.mount(*to_mount)
+            self.set_focus(to_mount[0])
 
     def _handle_money_value(self, event: Input.Submitted | Input.Blurred) -> None:
         if event.validation_result and not event.validation_result.is_valid:
@@ -201,6 +292,26 @@ class YureiApp(App[None]):
             return
 
         await self.file_selected(new_path)
+
+    @on(Button.Pressed)
+    async def handle_submits(self, event: Button.Pressed) -> None:
+        pane = self.query_one("#top-right", Horizontal)
+
+        match event.button.id:
+            case "unlock-submit-button":
+                select = pane.query_one("#unlock-gear-selection", SelectionList[str])
+                tier = pane.query_one("#unlock-gear-tier", Select[int])
+                for value in select.selected:
+                    self.save_file.unlock_equipment(item=value, tier=tier.selection)  # pyright: ignore[reportArgumentType] # we handle this
+                self.notify(f"Unlocked {', '.join(select.selected)} at tier {tier.selection}.")
+            case "add-submit-button":
+                select = pane.query_one("#unlock-gear-selection", SelectionList[str])
+                amount = pane.query_one("#add-gear-input", Input)
+                for value in select.selected:
+                    self.save_file.add_equipment(item=Equipment[value], amount=int(amount.value))
+                self.notify(f"Added {amount.value} of {', '.join(select.selected)}")
+            case _:
+                pass
 
     @on(Input.Submitted)
     @on(Input.Blurred)

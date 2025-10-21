@@ -20,8 +20,9 @@ EQUIPMENT_TIER_LOOKUP: dict[int, str] = {1: "One", 2: "Two", 3: "Three"}
 
 
 class Save:
-    ALLOWED_OPERATIONS: ClassVar[set[tuple[str, str]]] = {
+    TUI_ALLOWED_OPERATIONS: ClassVar[set[tuple[str, str]]] = {
         ("Unlock Gear", "unlock-gear"),
+        ("Add Gear", "add-gear"),
         ("Edit Money", "edit-money"),
         ("Alter Prestige/Level", "alter-level"),
     }
