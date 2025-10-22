@@ -4,7 +4,7 @@ from textual import on
 from textual.containers import Grid, VerticalScroll
 from textual.css.query import NoMatches
 from textual.validation import Integer
-from textual.widgets import Button, Checkbox, Input, RadioButton, RadioSet
+from textual.widgets import Button, Checkbox, Input, RadioButton, RadioSet, Static
 
 from yurei.unlockable import LOOKUP
 
@@ -35,14 +35,43 @@ class UnlockablePane(VerticalScroll):
 class AchievementManageGrid(Grid):
     app: YureiApp
 
+    DEFAULT_CSS = """
+    #achievement-manager-grid {
+        grid-size: 1 4;          /* 1 column, 4 rows */
+        grid-rows: auto auto auto 1fr; /* Last row stretches */
+        height: 100%;
+        width: 100%;
+    }
+
+    #achievement-manager-grid .grid-row {
+        /* margin-bottom: 0;   /* or 1, 2, 3px etc. */
+        margin-left: 1;
+        padding-left: 1;
+    }
+
+    #achievement-manager-grid Checkbox {
+        background: $surface;
+    }
+
+    #achievement-submit-button {
+        dock: bottom;
+        align-horizontal: left;
+        margin-left: 1;
+    }
+    """
+
     def __init__(self, achievement: Achievement) -> None:
         self.achievement = achievement
-        super().__init__(id="achivement-manager-grid", classes="unlockables")
+        super().__init__(id="achievement-manager-grid", classes="unlockables")
         self.border_title = "Details"
 
     def compose(self) -> ComposeResult:
-        yield Checkbox("Completed?", value=self.achievement.completed, id="achievement-manager-completed")
-        yield Checkbox("Recieved reward?", value=self.achievement.received, id="achievement-manager-received")
+        yield Checkbox(
+            "Completed?", value=self.achievement.completed, id="achievement-manager-completed", classes="grid-row"
+        )
+        yield Checkbox(
+            "Recieved reward?", value=self.achievement.received, id="achievement-manager-received", classes="grid-row"
+        )
         if not self.achievement.no_progression_count:
             yield Input(
                 value=str(self.achievement.progression),
@@ -50,8 +79,14 @@ class AchievementManageGrid(Grid):
                 validate_on=["blur", "submitted"],
                 validators=[Integer(0, 50, failure_description="The progression value must be between 0 and 50.")],
                 type="integer",
+                name="Progression value",
+                tooltip="The amount of progress towards this unlockable",
                 id="achievement-manager-progression",
+                classes="grid-row",
             )
+        else:
+            yield Static(id="achievement-manager-progression-spacer", classes="grid-row")
+
         yield Button(
             label="Submit",
             id="achievement-submit-button",
@@ -60,8 +95,21 @@ class AchievementManageGrid(Grid):
             flat=True,
         )
 
+    def process_progression_input(self, progression: Input) -> bool:
+        result = progression.validate(progression.value)
+        if not result or result.is_valid:
+            self.achievement.progression = int(progression.value)
+            return True
+        self.notify(
+            f"Unable to submit the value {progression.value!r}\n{', '.join(result.failure_descriptions)}",
+            title="Error!",
+            severity="error",
+            timeout=3.0,
+        )
+        return False
+
     @on(Button.Pressed, "#achievement-submit-button")
-    async def submit(self, message: Button.Pressed) -> None:
+    async def submit(self, _: Button.Pressed) -> None:
         completed = self.query_one("#achievement-manager-completed", Checkbox)
         received = self.query_one("#achievement-manager-received", Checkbox)
         try:
@@ -70,7 +118,7 @@ class AchievementManageGrid(Grid):
             progression = None
 
         if progression:
-            self.achievement.progression = int(progression.value)
+            self.process_progression_input(progression)
         if completed.value:
             self.achievement.completed = True
             self.achievement.progression = (
