@@ -4,15 +4,14 @@ from typing import TYPE_CHECKING, ClassVar
 from textual import on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Container, Grid, Horizontal, VerticalScroll
-from textual.validation import Function, Integer, Length
+from textual.containers import Container, Horizontal, VerticalScroll
+from textual.css.query import NoMatches
 from textual.widgets import (
     Button,
     DirectoryTree,
     Footer,
     Header,
     Input,
-    Label,
     RadioButton,
     RadioSet,
     Select,
@@ -23,35 +22,19 @@ from textual.widgets import (
 from yurei.enums import Equipment
 from yurei.save import EQUIPMENT, Save
 
-if TYPE_CHECKING:
-    from collections.abc import Iterable
-    from pathlib import Path
+from .widgets.add_gear import AddGearGrid
+from .widgets.file_browser import PathInputBrowser, SafeDirectoryTree
+from .widgets.level import LevelGrid
+from .widgets.money import MoneyGrid
+from .widgets.unlock_gear import UnlockGearGrid
+from .widgets.unlockables import AchievementManageGrid, UnlockablePane
 
+if TYPE_CHECKING:
     from textual.binding import BindingType
     from textual.dom import DOMNode
     from textual.timer import Timer
 
-
-def is_real_path(input_: str) -> bool:
-    return pathlib.Path(input_).expanduser().resolve().exists()
-
-
-class SafeDirectoryTree(DirectoryTree):
-    def filter_paths(self, paths: Iterable[Path]) -> Iterable[Path]:
-        return [p for p in paths if not p.name.startswith(".")]
-
-
-class PathInput(Input):
-    def __init__(self) -> None:
-        super().__init__(
-            placeholder="Path...",
-            id="path-input",
-            validators=[
-                Function(is_real_path, failure_description="The provided path does not exist or is not readable/writable."),
-                Length(minimum=0, failure_description="Length of the path must be at least 1 character, if provided"),
-            ],
-            validate_on=["submitted", "blur"],
-        )
+    from ..unlockable import Achievement
 
 
 class YureiApp(App[None]):
@@ -70,15 +53,16 @@ class YureiApp(App[None]):
 
     def compose(self) -> ComposeResult:
         self.debounce_timer = None
-        yield Header(id="app-header", show_clock=True)
+        yield Header(name="Yurei", id="app-header", show_clock=True)
         with Container(id="app-grid"):
-            with VerticalScroll(id="left-pane", can_focus=True, can_focus_children=True):
-                yield PathInput()
-                yield SafeDirectoryTree(".", id="open-save-tree")
+            yield PathInputBrowser("left-pane", path=".")
             with Horizontal(id="top-right"):
                 yield Container(id="top-right-container")
             with Container(id="bottom-right"), VerticalScroll(id="data-pane"):
-                yield TextArea.code_editor(id="decrypted-output", language="json", read_only=True, show_line_numbers=True)
+                ta = TextArea.code_editor(id="decrypted-output", language="json", read_only=True, show_line_numbers=True)
+                ta.border_title = "Decoded save output"
+                ta.border_subtitle = "Read-only"
+                yield ta
         yield Footer(show_command_palette=False)
 
     async def on_mount(self) -> None:
@@ -93,7 +77,7 @@ class YureiApp(App[None]):
         return True
 
     async def action_open_file(self, default: bool = False) -> None:  # noqa: FBT001, FBT002 # i dont think kwargs are supported
-        pane = self.query_one("#left-pane", VerticalScroll)
+        pane = self.query_one("#left-pane", PathInputBrowser)
         if default:
             self.save_file = Save.from_default_path()
             text_area = self.query_one("#decrypted-output", TextArea)
@@ -101,20 +85,24 @@ class YureiApp(App[None]):
 
         # reload input
         input_ = pane.query_one("#path-input", Input)
-        if pane:
-            input_.value = ""
-            input_.placeholder = "Path..."
-            input_.refresh()
+        input_.value = ""
+        input_.placeholder = "Path..."
+        input_.refresh()
+
         # reload tree if exists
-        tree = pane.query_one("#open-save-tree", SafeDirectoryTree)
-        if tree:
+        try:
+            tree = pane.query_one("#open-save-tree", SafeDirectoryTree)
+        except NoMatches:
+            pass
+        else:
             await tree.reload()
             tree.focus()
             return
 
-        input_ = Input(placeholder="Path...", id="path-input")
-        directory_tree = SafeDirectoryTree(".", id="open-save-tree")
-        await pane.mount(input_, directory_tree)
+        await pane.remove()
+        browser = PathInputBrowser("left-pane", path=".")
+        await self.mount(browser)
+        directory_tree = browser.query_one("#open-save-tree", SafeDirectoryTree)
         directory_tree.focus()
 
     async def action_save_file(self) -> None:
@@ -139,122 +127,72 @@ class YureiApp(App[None]):
         self.save_file = Save.from_path(file)
         self.refresh_code_container()
 
-        pane = self.query_one("#left-pane", VerticalScroll)
+        pane = self.query_one("#left-pane")
 
         await pane.remove_children()
+        pane.border_title = "Options"
         radio_set = RadioSet(
             *[RadioButton(item[0], id=item[1]) for item in sorted(self.save_file.TUI_ALLOWED_OPERATIONS)], id="methods"
         )
         await pane.mount(radio_set)
         self.set_focus(radio_set)
 
+    async def set_unlockable_pane(self) -> None:
+        new_pane = UnlockablePane("left-pane", radio_set_id="unlockables")
+        current_pane = self.query_one("#left-pane")
+        await current_pane.remove()
+
+        app_grid = self.query_one("#app-grid", Container)
+        await app_grid.mount(new_pane, before=0)
+        self.set_focus(new_pane.query_one("#unlockables", RadioSet))
+
     async def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected) -> None:
         await self.file_selected(event.path)
 
-    async def on_radio_set_changed(self, message: RadioSet.Changed) -> None:
-        if message.radio_set.id == "methods":
-            match message.pressed.id:
-                case "edit-money":
-                    to_mount = [
-                        Grid(
-                            Label("Money:", id="money-label"),
-                            Input(
-                                placeholder=f"{self.save_file.money}",
-                                type="integer",
-                                validate_on=["submitted", "blur"],
-                                validators=[Length(minimum=0), Integer(0, 249999, "must be between 0 and 249,999")],
-                                id="money-value",
-                            ),
-                            id="money-scroll",
-                            classes="two-col",
-                        )
-                    ]
-                case "alter-level":
-                    to_mount = [
-                        Grid(
-                            Label("Prestige:", id="prestige-label"),
-                            Input(
-                                placeholder=str(self.save_file.prestige),
-                                type="integer",
-                                validate_on=["blur", "submitted"],
-                                validators=[
-                                    Length(0, 3, failure_description="Must be a minimum of 0 characters"),
-                                    Integer(0, 100, "Level must be a minimum of 0 and maximum of 100"),
-                                ],
-                                id="level-prestige-input",
-                            ),
-                            Label("Level:", id="level-label"),
-                            Input(
-                                placeholder=str(self.save_file.level),
-                                type="integer",
-                                validate_on=["submitted", "blur"],
-                                validators=[
-                                    Length(minimum=0),
-                                    Integer(
-                                        0, 100, failure_description="Prestige cannot be lower than 0 or higher than 100."
-                                    ),
-                                ],
-                                id="level-level-input",
-                            ),
-                            id="level-prestige-grid",
-                            classes="two-col",
-                        ),
-                    ]
-                case "unlock-gear":
-                    items = [(item, item) for item in sorted(EQUIPMENT)]
-                    to_mount = [
-                        Grid(
-                            SelectionList[str](*items, name="Unlock gear tier", id="unlock-gear-selection"),
-                            Horizontal(
-                                Select[int](
-                                    [("One", 1), ("Two", 2), ("Three", 3)],
-                                    id="unlock-gear-tier",
-                                    prompt="Tier",
-                                    allow_blank=False,
-                                ),
-                                Button(
-                                    label="Submit",
-                                    id="unlock-submit-button",
-                                    variant="primary",
-                                    name="Unlock Submit",
-                                    flat=True,
-                                ),
-                                classes="input-row",
-                            ),
-                            id="unlock-gear-grid",
-                            classes="gear",
-                        )
-                    ]
-                case "add-gear":
-                    items = [(item, item) for item in sorted(EQUIPMENT)]
-                    to_mount = [
-                        Grid(
-                            SelectionList[str](*items, name="Set gear amount", id="add-gear-selection"),
-                            Horizontal(
-                                Input(
-                                    placeholder="Amount?",
-                                    id="add-gear-input",
-                                    type="integer",
-                                    validate_on=["blur", "submitted"],
-                                    validators=[Integer(0, 50, failure_description="Gear amount must be between 0 and 50.")],
-                                ),
-                                Button(
-                                    label="Submit", id="add-submit-button", variant="primary", name="Add Submit", flat=True
-                                ),
-                                classes="input-row",
-                            ),
-                            id="add-gear-grid",
-                            classes="gear",
-                        )
-                    ]
-                case _:
-                    return
+    @on(RadioSet.Changed, "#methods")
+    async def on_methods_radio_changed(self, message: RadioSet.Changed) -> None:
+        if not message.pressed.id:
+            return None
 
-            top_right = self.query_one("#top-right", Horizontal)
-            await top_right.remove_children()
+        match message.pressed.id:
+            case "edit-money":
+                to_mount = MoneyGrid()
+            case "alter-level":
+                to_mount = LevelGrid()
+            case "unlock-gear":
+                items = [(item, item) for item in sorted(EQUIPMENT)]
+                to_mount = UnlockGearGrid(items)
+            case "add-gear":
+                items = [(item, item) for item in sorted(EQUIPMENT)]
+                to_mount = AddGearGrid(items)
+            case "manage-unlockables":
+                return await self.set_unlockable_pane()
+            case _:
+                return None
 
-            await top_right.mount(*to_mount)
-            self.set_focus(to_mount[0])
+        top_right = self.query_one("#top-right", Horizontal)
+        await top_right.remove_children()
+
+        await top_right.mount(to_mount)
+        self.set_focus(to_mount)
+        return None
+
+    @on(RadioSet.Changed, "#unlockables")
+    async def on_unlockables_radioset_changed(self, message: RadioSet.Changed) -> None:
+        button_id = message.pressed.id
+        if not button_id:
+            return
+
+        data: Achievement = getattr(self.save_file.unlockable_manager, button_id)
+        to_mount = AchievementManageGrid(data)
+
+        top_right = self.query_one("#top-right", Horizontal)
+        for child in list(top_right.children):
+            await child.remove()
+
+        await top_right.mount(to_mount)
+        self.refresh(layout=True)
+        self.set_focus(to_mount)
 
     def _handle_money_value(self, event: Input.Submitted | Input.Blurred) -> None:
         if event.validation_result and not event.validation_result.is_valid:

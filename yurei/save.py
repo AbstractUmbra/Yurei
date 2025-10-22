@@ -1,15 +1,17 @@
 import logging
 import pathlib
-from typing import TYPE_CHECKING, ClassVar, Literal, Self
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self, cast
 
 from .crypt import decrypt, encrypt
 from .enums import Equipment
-from .utils import resolve_save_path, to_json
+from .unlockable import UnlockableManager
+from .utils import MISSING, resolve_save_path, to_json
 
 if TYPE_CHECKING:
     from types import TracebackType
 
     from .types_.save import Save as SaveType
+    from .unlockable import CURRENT_UNLOCKABLES, Achievement
 
 __all__ = ("Save",)
 
@@ -25,10 +27,14 @@ class Save:
         ("Add Gear", "add-gear"),
         ("Edit Money", "edit-money"),
         ("Alter Prestige/Level", "alter-level"),
+        ("Manage Unlockables", "manage-unlockables"),
     }
+
+    __slots__ = ("_data", "_written", "save_path", "unlockable_manager")
 
     def __init__(self, *, data: SaveType, path: pathlib.Path) -> None:
         self._data = data
+        self.unlockable_manager = UnlockableManager(self)
         self.save_path = path
         self._written: bool = False
 
@@ -60,7 +66,11 @@ class Save:
         if backup_path.exists():
             backup_path.unlink(missing_ok=True)
 
+        LOGGER.info("Creating backup at %r", str(backup_path))
         return self.save_path.copy(backup_path)
+
+    def get_value[T: Any = Any](self, key: str, _: type[T] = MISSING) -> T:
+        return cast("T", self._data[key]["value"])
 
     @property
     def level(self) -> int:
@@ -123,17 +133,32 @@ class Save:
         for equipment in EQUIPMENT:
             self._do_add_equipment(equipment, amount, bulk=True)
 
+    def manage_unlockable(self, unlockable: CURRENT_UNLOCKABLES) -> Achievement:
+        return getattr(self.unlockable_manager, unlockable)
+
     def to_json_string(self) -> str:
         return to_json(self._data)
 
+    def _merge_unlockables(self) -> None:
+        for attr in self.unlockable_manager.__slots__:
+            unlockable = self.unlockable_manager.get_handler(attr)  # pyright: ignore[reportArgumentType] # our slots are the literal
+            unlockable_data = unlockable.to_data()
+            LOGGER.info("UNLOCKABLE: Merging %r", str(unlockable_data))
+            self._data.update(unlockable_data)  # pyright: ignore[reportArgumentType, reportCallIssue] # our keys match but we can't narrow, alas
+
     def write(self) -> pathlib.Path:
         from . import CURRENT_SAVE_KEY  # noqa: PLC0415 # cyclic circumvention
+
+        # merge unlockables
+        self._merge_unlockables()
 
         decrypted = to_json(self._data).encode()
         with TEMP_FILE.open("wb") as fp:
             fp.write(decrypted)
 
         encrypted = encrypt(data=decrypted, password=CURRENT_SAVE_KEY)
+
+        self.create_backup()
 
         with self.save_path.open("wb") as fp:
             fp.write(encrypted)
