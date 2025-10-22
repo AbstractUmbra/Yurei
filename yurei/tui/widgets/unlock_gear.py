@@ -11,6 +11,7 @@ class UnlockGearGrid(Grid):
     def __init__(self, items: list[tuple[str, str]]) -> None:
         self._equipment_items = items
         super().__init__(id="unlock-gear-grid", classes="gear")
+        self.border_title = "Unlock gear and alter tiers"
 
     def compose(self) -> ComposeResult:
         yield SelectionList[str](*self._equipment_items, name="Unlock gear tier", id="unlock-gear-selection")

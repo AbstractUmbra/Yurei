@@ -15,6 +15,7 @@ class LevelGrid(Grid):
 
     def __init__(self) -> None:
         super().__init__(id="level-prestige-grid", classes="two-col")
+        self.border_title = "Alter your level/prestige"
 
     def compose(self) -> ComposeResult:
         yield Label("Prestige:", id="prestige-label")

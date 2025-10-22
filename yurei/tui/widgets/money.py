@@ -15,6 +15,7 @@ class MoneyGrid(Grid):
 
     def __init__(self) -> None:
         super().__init__(id="money-scroll", classes="two-col")
+        self.border_title = "Alter your money"
 
     def compose(self) -> ComposeResult:
         yield Label("Money:", id="money-label")

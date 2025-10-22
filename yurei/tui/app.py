@@ -34,7 +34,7 @@ if TYPE_CHECKING:
     from textual.dom import DOMNode
     from textual.timer import Timer
 
-    from ..unlockable import Achievement
+    from yurei.unlockable import Achievement
 
 
 class YureiApp(App[None]):
@@ -42,7 +42,6 @@ class YureiApp(App[None]):
     debounce_timer: Timer | None
     BINDINGS: ClassVar[list[BindingType]] = [
         Binding("ctrl+q", "quit", "Exit the application, making no changes", show=True, priority=True),
-        ("d", "toggle_dark", "Toggle dark mode"),
         ("o", "open_file", "Browse for a save file"),
         ("O", "open_file(True)", "Open the default save file at known path"),
         Binding("ctrl+w", "save_file", "Save the current edits to the selected file", priority=True),
@@ -52,7 +51,7 @@ class YureiApp(App[None]):
     SUB_TITLE = "A Phasmophobia Save editor"
 
     def compose(self) -> ComposeResult:
-        self.debounce_timer = None
+        self.theme = "textual-dark"
         yield Header(name="Yurei", id="app-header", show_clock=True)
         with Container(id="app-grid"):
             yield PathInputBrowser("left-pane", path=".")
@@ -173,6 +172,7 @@ class YureiApp(App[None]):
         top_right = self.query_one("#top-right", Horizontal)
         await top_right.remove_children()
 
+        top_right.border_title = to_mount.border_title
         await top_right.mount(to_mount)
         self.set_focus(to_mount)
         return None
@@ -190,6 +190,7 @@ class YureiApp(App[None]):
         for child in list(top_right.children):
             await child.remove()
 
+        top_right.border_title = to_mount.border_title
         await top_right.mount(to_mount)
         self.refresh(layout=True)
         self.set_focus(to_mount)
