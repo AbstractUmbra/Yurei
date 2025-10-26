@@ -1,12 +1,28 @@
 [project]
 name = "Yurei"
-version = "0.0.1"
 description = "Phasmophobia save editor."
 authors = [{ name = "Alex Nørgaard", email = "umbra@abstractumbra.dev" }]
-dependencies = ["pycryptodome>=3.23.0", "textual[syntax]>=6.3.0"]
+dependencies = ["pycryptodome>=3.23.0,<4", "textual[syntax]>=6.3.0,<7"]
 requires-python = "<4.0,>=3.14"
 readme = "README.md"
 license = { file = "LICENSE" }
+keywords = ["phasmophobia", "save", "save-editor"]
+classifiers = [
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Games/Entertainment",
+    "Topic :: Games/Entertainment :: Role-Playing",
+    "Typing :: Typed",
+]
+dynamic = ["version"]
+
+[project.urls]
+"Issue Tracker" = "https://github.com/AbstractUmbra/Yurei/issues"
+Discord = "https://discord.gg/aYGYJxwqe5"
+Repository = "https://github.com/AbstractUmbra/Yurei"
 
 [project.scripts]
 yurei = "yurei.tui:entry"
@@ -14,10 +30,10 @@ yurei-web = "yurei.tui:web_entry"
 
 [project.optional-dependencies]
 speed = ["orjson>=3.11.3"]
-web = ["textual-serve"]
+web = ["textual-serve>=1.1.2,<2"]
 
 [dependency-groups]
-dev = ["ruff", "textual-dev"]
+dev = ["ruff==0.14.1", "textual-dev>=1.8.0,<2"]
 
 [tool.uv]
 package = true
