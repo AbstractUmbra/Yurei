@@ -39,3 +39,8 @@ If you use the `web` extra, you can use the `yurei-web`, but this is experimenta
 [x] Achievement managment
 [x] Easter Egg management
 [ ] Ghost/spirit values, death and encounter
+
+
+#### Help wanted
+
+If you're good at design/visuals then I'd love for you to help make this prettier. I for one am terrible at making things look nice.
