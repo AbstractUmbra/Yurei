@@ -6,20 +6,17 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, VerticalScroll
 from textual.css.query import NoMatches
+from textual.events import Focus
 from textual.widgets import (
-    Button,
     DirectoryTree,
     Footer,
     Header,
     Input,
     RadioButton,
     RadioSet,
-    Select,
-    SelectionList,
     TextArea,
 )
 
-from yurei.enums import Equipment
 from yurei.save import EQUIPMENT, Save
 
 from .widgets.add_gear import AddGearGrid
@@ -38,6 +35,7 @@ if TYPE_CHECKING:
 
 
 class YureiApp(App[None]):
+    _has_touched_editor: bool
     save_file: Save
     debounce_timer: Timer | None
     BINDINGS: ClassVar[list[BindingType]] = [
@@ -58,13 +56,14 @@ class YureiApp(App[None]):
             with Horizontal(id="top-right"):
                 yield Container(id="top-right-container")
             with Container(id="bottom-right"), VerticalScroll(id="data-pane"):
-                ta = TextArea.code_editor(id="decrypted-output", language="json", read_only=True, show_line_numbers=True)
+                ta = TextArea.code_editor(id="decrypted-output", language="json", read_only=False, show_line_numbers=True)
                 ta.border_title = "Decoded save output"
-                ta.border_subtitle = "Read-only"
+                ta.border_subtitle = "Edit at your own risk!"
                 yield ta
         yield Footer(show_command_palette=False)
 
     async def on_mount(self) -> None:
+        self._has_touched_editor = False
         self.set_focus(self.query_one("#open-save-tree", SafeDirectoryTree))
 
     def action_exit_app(self) -> None:
@@ -74,6 +73,16 @@ class YureiApp(App[None]):
         if action == "save_file" and not getattr(self, "save_file", None):  # noqa: SIM103 # this may need more nesting
             return False
         return True
+
+    @on(Focus, "#decrypted-output")
+    async def on_text_editor_focus(self, _: Focus) -> None:
+        if getattr(self, "_has_touched_editor", False):
+            return
+
+        self.notify(
+            "Please only edit and save these changes at your own risk.", title="Warning!", severity="warning", timeout=3.0
+        )
+        self._has_touched_editor = True
 
     async def action_open_file(self, default: bool = False) -> None:  # noqa: FBT001, FBT002 # i dont think kwargs are supported
         pane = self.query_one("#left-pane", PathInputBrowser)
@@ -231,26 +240,6 @@ class YureiApp(App[None]):
             return
 
         await self.file_selected(new_path)
-
-    @on(Button.Pressed)
-    async def handle_submits(self, event: Button.Pressed) -> None:
-        pane = self.query_one("#top-right", Horizontal)
-
-        match event.button.id:
-            case "unlock-submit-button":
-                select = pane.query_one("#unlock-gear-selection", SelectionList[str])
-                tier = pane.query_one("#unlock-gear-tier", Select[int])
-                for value in select.selected:
-                    self.save_file.unlock_equipment(item=value, tier=tier.selection)  # pyright: ignore[reportArgumentType] # we handle this
-                self.notify(f"Unlocked {', '.join(select.selected)} at tier {tier.selection}.")
-            case "add-submit-button":
-                select = pane.query_one("#unlock-gear-selection", SelectionList[str])
-                amount = pane.query_one("#add-gear-input", Input)
-                for value in select.selected:
-                    self.save_file.add_equipment(item=Equipment[value], amount=int(amount.value))
-                self.notify(f"Added {amount.value} of {', '.join(select.selected)}")
-            case _:
-                pass
 
     @on(Input.Submitted)
     @on(Input.Blurred)

@@ -26,11 +26,15 @@ import json
 import os
 import pathlib
 import platform
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 __all__ = (
     "MISSING",
     "from_json",
+    "human_join",
     "resolve_save_path",
     "to_json",
 )
@@ -83,3 +87,14 @@ def resolve_save_path() -> pathlib.Path:
     save_data_path = (pathlib.Path(user_profile) / "AppData" / "LocalLow" / "Kinetic Games" / "Phasmophobia").expanduser()
 
     return save_data_path / "SaveFile.txt"
+
+
+def human_join(items: Iterable[str], separator: str = ", ", last_separator: str = ", and ") -> str:
+    items = list(items)
+    if not items:
+        return ""
+    if len(items) == 1:
+        return items[0]
+    if len(items) == 2:
+        return items[0] + " and " + items[1]
+    return separator.join(items[:-1]) + last_separator + items[-1]

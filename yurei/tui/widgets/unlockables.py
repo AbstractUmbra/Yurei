@@ -128,4 +128,5 @@ class AchievementManageGrid(Grid):
             self.achievement.received = True
 
         setattr(self.app.save_file.unlockable_manager, self.achievement.attribute_name, self.achievement)
+        self.app.refresh_code_container()
         self.app.notify(f"Submitted achievement info for {self.achievement.pretty_name}", title="Success!", timeout=3.0)
