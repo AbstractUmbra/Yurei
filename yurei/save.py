@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self, cast
 from .crypt import decrypt, encrypt
 from .enums import Equipment
 from .unlockable import UnlockableManager
-from .utils import MISSING, resolve_save_path, to_json
+from .utils import MISSING, from_json, resolve_save_path, to_json
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -30,12 +30,13 @@ class Save:
         ("Manage Unlockables", "manage-unlockables"),
     }
 
-    __slots__ = ("_data", "_written", "save_path", "unlockable_manager")
+    __slots__ = ("_create_backup", "_data", "_written", "save_path", "unlockable_manager")
 
-    def __init__(self, *, data: SaveType, path: pathlib.Path) -> None:
+    def __init__(self, *, data: SaveType, path: pathlib.Path, create_backup: bool = True) -> None:
         self._data = data
         self.unlockable_manager = UnlockableManager(self)
         self.save_path = path
+        self._create_backup = create_backup
         self._written: bool = False
 
     def __enter__(self) -> Self:
@@ -48,18 +49,18 @@ class Save:
             self.write()
 
     @classmethod
-    def from_path(cls, path: pathlib.Path) -> Self:
+    def from_path(cls, path: pathlib.Path, *, create_backup: bool = True) -> Self:
         data = path.read_bytes()
         from . import CURRENT_SAVE_KEY  # noqa: PLC0415 # cyclic circumvention
 
-        return cls(data=decrypt(data=data, password=CURRENT_SAVE_KEY), path=path)
+        return cls(data=decrypt(data=data, password=CURRENT_SAVE_KEY), path=path, create_backup=create_backup)
 
     @classmethod
-    def from_default_path(cls) -> Self:
+    def from_default_path(cls, *, create_backup: bool = True) -> Self:
         path = resolve_save_path()
         from . import CURRENT_SAVE_KEY  # noqa: PLC0415 # cyclic circumvention
 
-        return cls(data=decrypt(path=path, password=CURRENT_SAVE_KEY), path=path)
+        return cls(data=decrypt(path=path, password=CURRENT_SAVE_KEY), path=path, create_backup=create_backup)
 
     def create_backup(self) -> pathlib.Path:
         backup_path = self.save_path.with_suffix(".txt.bak")
@@ -139,8 +140,14 @@ class Save:
     def to_json_string(self) -> str:
         return to_json(self._data)
 
+    def from_json_string(self, input_: str, /) -> None:
+        self._data = from_json(input_)
+
     def _merge_unlockables(self) -> None:
         for attr in self.unlockable_manager.__slots__:
+            if attr.startswith("_"):
+                continue
+
             unlockable = self.unlockable_manager.get_handler(attr)  # pyright: ignore[reportArgumentType] # our slots are the literal
             unlockable_data = unlockable.to_data()
             LOGGER.info("UNLOCKABLE: Merging %r", str(unlockable_data))
