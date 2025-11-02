@@ -1,6 +1,6 @@
 from enum import StrEnum
 
-__all__ = ("Equipment", "Ghosts")
+__all__ = ("Equipment", "Ghost")
 
 
 class Equipment(StrEnum):
@@ -28,7 +28,7 @@ class Equipment(StrEnum):
     video_camera = "VideoCamera"
 
 
-class Ghosts(StrEnum):
+class Ghost(StrEnum):
     banshee = "Banshee"
     demon = "Demon"
     deogen = "Deogen"
