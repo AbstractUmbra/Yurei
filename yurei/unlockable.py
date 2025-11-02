@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, final
 
 if TYPE_CHECKING:
     from .save import Save
@@ -102,18 +102,19 @@ class Achievement:
         }
 
 
+@final
 class UnlockableManager:
     __slots__ = (
+        "_save",
         "farmhouse_fieldwork",
         "lighthouse_ferrymen",
         "lighthouse_keeper",
         "ranger_challenge",
-        "save",
         "sunny_meadows_survival",
     )
 
     def __init__(self, save: Save, /) -> None:
-        self.save = save
+        self._save = save
         self.farmhouse_fieldwork = Achievement(
             "FarmhouseFieldwork",
             completed=save.get_value("FarmhouseFieldworkCompleted", int),
