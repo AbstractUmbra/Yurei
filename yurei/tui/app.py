@@ -6,7 +6,6 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, VerticalScroll
 from textual.css.query import NoMatches
-from textual.events import Focus
 from textual.widgets import (
     DirectoryTree,
     Footer,
@@ -14,12 +13,12 @@ from textual.widgets import (
     Input,
     RadioButton,
     RadioSet,
-    TextArea,
 )
 
 from yurei.save import EQUIPMENT, Save
 
 from .widgets.add_gear import AddGearGrid
+from .widgets.code_editor import CodeEditor
 from .widgets.file_browser import PathInputBrowser, SafeDirectoryTree
 from .widgets.level import LevelGrid
 from .widgets.money import MoneyGrid
@@ -29,6 +28,7 @@ from .widgets.unlockables import AchievementManageGrid, UnlockablePane
 if TYPE_CHECKING:
     from textual.binding import BindingType
     from textual.dom import DOMNode
+    from textual.events import Focus
     from textual.timer import Timer
 
     from yurei.unlockable import Achievement
@@ -56,7 +56,7 @@ class YureiApp(App[None]):
             with Horizontal(id="top-right"):
                 yield Container(id="top-right-container")
             with Container(id="bottom-right"), VerticalScroll(id="data-pane"):
-                ta = TextArea.code_editor(id="decrypted-output", language="json", read_only=False, show_line_numbers=True)
+                ta = CodeEditor.code_editor(id="decrypted-output", language="json", read_only=False, show_line_numbers=True)
                 ta.border_title = "Decoded save output"
                 ta.border_subtitle = "Edit at your own risk!"
                 yield ta
@@ -74,21 +74,28 @@ class YureiApp(App[None]):
             return False
         return True
 
-    @on(Focus, "#decrypted-output")
-    async def on_text_editor_focus(self, _: Focus) -> None:
-        if getattr(self, "_has_touched_editor", False):
+    async def on_focus(self, event: Focus) -> None:
+        x = event.control
+        if not x:
             return
 
-        self.notify(
-            "Please only edit and save these changes at your own risk.", title="Warning!", severity="warning", timeout=3.0
-        )
-        self._has_touched_editor = True
+        if x.id == "decrypted-output":
+            if getattr(self, "_has_touched_editor", False):
+                return
+
+            self.notify(
+                "Please only edit and save these changes at your own risk.",
+                title="Warning!",
+                severity="warning",
+                timeout=3.0,
+            )
+            self._has_touched_editor = True
 
     async def action_open_file(self, default: bool = False) -> None:  # noqa: FBT001, FBT002 # i dont think kwargs are supported
         pane = self.query_one("#left-pane", PathInputBrowser)
         if default:
             self.save_file = Save.from_default_path()
-            text_area = self.query_one("#decrypted-output", TextArea)
+            text_area = self.query_one("#decrypted-output", CodeEditor)
             text_area.replace(insert=self.save_file.to_json_string(), start=(0, 0), end=text_area.document.end)
 
         # reload input
@@ -127,7 +134,7 @@ class YureiApp(App[None]):
         self.notify("The selected file has been written to!", severity="information", timeout=3.0)
 
     def refresh_code_container(self) -> None:
-        text_area = self.query_one("#decrypted-output", TextArea)
+        text_area = self.query_one("#decrypted-output", CodeEditor)
         text_area.replace(insert=self.save_file.to_json_string(), start=(0, 0), end=text_area.document.end)
         text_area.refresh()
 
