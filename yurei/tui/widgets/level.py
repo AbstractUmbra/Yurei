@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.containers import Grid
 from textual.validation import Integer
 from textual.widgets import Input, Label
@@ -38,3 +39,18 @@ class LevelGrid(Grid):
             ],
             id="level-level-input",
         )
+
+    @on(Input.Submitted, "#level-level-input")
+    @on(Input.Blurred, "#level-level-input")
+    async def handle_level_input(self, event: Input.Submitted | Input.Blurred) -> None:
+        if event.validation_result and not event.validation_result.is_valid:
+            self.notify(
+                message="\n".join(event.validation_result.failure_descriptions),
+                title="Level input error",
+                severity="error",
+                timeout=3.0,
+            )
+            return
+
+        self.app.save_file.level = int(event.value)
+        self.notify(message="Level input has changed.", title="Success!", severity="information", timeout=3.0)

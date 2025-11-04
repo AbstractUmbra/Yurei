@@ -94,10 +94,10 @@ class Save:
     @level.setter
     def level(self, value: int) -> None:
         LOGGER.info("Setting level to %s", value)
-        if self.prestige > 0:
+        if self.prestige < 1:
             self._data["NewLevel"]["value"] = value
-            self._data["Level"]["value"] = 100
         else:
+            self._data["NewLevel"]["value"] = 100
             self._data["Level"]["value"] = value
 
     @property
