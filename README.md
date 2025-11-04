@@ -8,8 +8,9 @@ Windows:
 ```
 %USERPROFILE%\AppData\LocalLow\Kinetic Games\Phasmophobia\SaveFile.txt
 ```
-[!TIP]
-We have support for loading this default file path on Windows due to it's location being static, Linux does not have this benefit, below is the relative path to the save location
+
+> [!TIP]
+> We have support for loading this default file path on Windows due to it's location being static, Linux does not have this benefit, below is the relative path to the save location
 
 Linux:
 ```
