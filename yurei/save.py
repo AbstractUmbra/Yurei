@@ -102,13 +102,17 @@ class Save:
 
     @property
     def prestige(self) -> int:
-        return self._data["Prestige"]["value"]
+        return self._data.get("Prestige", {}).get("value", 0)
 
     @prestige.setter
     def prestige(self, value: int) -> None:
         LOGGER.info("Setting prestige to %s", value)
-        self._data["Prestige"]["value"] = value
-        self._data["PrestigeIndex"]["value"] = value
+        if value == 0:
+            self._data.pop("Prestige", 0)
+            self._data.pop("PrestigeIndex", 0)
+        else:
+            self._data["Prestige"]["value"] = value
+            self._data["PrestigeIndex"]["value"] = value
 
     @property
     def money(self) -> int:
