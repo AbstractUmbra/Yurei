@@ -36,6 +36,7 @@ DATA_KEY_TO_ATTRIBUTE_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, CURRENT_UNLOCKA
 }
 
 
+@final
 class Achievement:
     MAX_PROGRESSION_VALUE: int = 50
     __slots__ = ("_completed", "_progression", "_received", "name", "no_progression_count")
@@ -117,35 +118,41 @@ class UnlockableManager:
         self._save = save
         self.farmhouse_fieldwork = Achievement(
             "FarmhouseFieldwork",
-            completed=save.get_value("FarmhouseFieldworkCompleted", int),
-            progression=save.get_value("FarmhouseFieldworkProgression", int),
-            received=save.get_value("FarmhouseFieldworkReceived", int),
+            completed=save.get_value("FarmhouseFieldworkCompleted", int, default=0),
+            progression=save.get_value("FarmhouseFieldworkProgression", int, default=0),
+            received=save.get_value("FarmhouseFieldworkReceived", int, default=0),
         )
         self.lighthouse_ferrymen = Achievement(
             "lighthouseFerrymen",
-            completed=save.get_value("lighthouseFerrymenCompleted", int),
-            progression=save.get_value("lighthouseFerrymenProgression", int),
-            received=save.get_value("lighthouseFerrymenReceived", int),
+            completed=save.get_value("lighthouseFerrymenCompleted", int, default=0),
+            progression=save.get_value("lighthouseFerrymenProgression", int, default=0),
+            received=save.get_value("lighthouseFerrymenReceived", int, default=0),
             no_progression_count=True,
         )
         self.lighthouse_keeper = Achievement(
             "lighthouseKeeper",
-            completed=save.get_value("lighthouseKeeperCompleted", int),
-            progression=save.get_value("lighthouseKeeperProgression", int),
-            received=save.get_value("lighthouseKeeperReceived", int),
+            completed=save.get_value("lighthouseKeeperCompleted", int, default=0),
+            progression=save.get_value("lighthouseKeeperProgression", int, default=0),
+            received=save.get_value("lighthouseKeeperReceived", int, default=0),
         )
         self.ranger_challenge = Achievement(
             "rangerChallenge",
-            completed=save.get_value("rangerChallengeCompleted", int),
-            progression=save.get_value("rangerChallengeProgression", int),
-            received=save.get_value("rangerChallengeReceived", int),
+            completed=save.get_value("rangerChallengeCompleted", int, default=0),
+            progression=save.get_value("rangerChallengeProgression", int, default=0),
+            received=save.get_value("rangerChallengeReceived", int, default=0),
         )
         self.sunny_meadows_survival = Achievement(
             "sunnyMeadowsSurvival",
-            completed=save.get_value("sunnyMeadowsSurvivalCompleted", int),
-            progression=save.get_value("sunnyMeadowsSurvivalProgression", int),
-            received=save.get_value("sunnyMeadowsSurvivalReceived", int),
+            completed=save.get_value("sunnyMeadowsSurvivalCompleted", int, default=0),
+            progression=save.get_value("sunnyMeadowsSurvivalProgression", int, default=0),
+            received=save.get_value("sunnyMeadowsSurvivalReceived", int, default=0),
         )
+
+    def __contains__(self, key: str, /) -> bool:
+        return hasattr(self, key)
+
+    def __bool__(self) -> bool:
+        return any(hasattr(self, key) for key in self.__slots__ if not key.startswith("_"))
 
     def get_handler(self, key: CURRENT_UNLOCKABLES) -> Achievement:
         return getattr(self, key)

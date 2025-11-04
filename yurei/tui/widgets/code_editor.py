@@ -15,6 +15,7 @@ class CodeEditor(TextArea):
 
     def action_save(self) -> None:
         self.app.save_file.from_json_string(self.text)
+        self.app.save_file._reload()  # pyright: ignore[reportPrivateUsage] # we need to reload internals after loading content manually
         self.app.save_file.write()
         self.app.notify("Successfully saved the editor contents!", title="Success!", severity="information", timeout=3.0)
         self.app.refresh_code_container()

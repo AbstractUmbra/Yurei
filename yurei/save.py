@@ -1,6 +1,7 @@
+import datetime
 import logging
 import pathlib
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self, cast
+from typing import TYPE_CHECKING, Any, Final, Literal, Self, cast
 
 from .crypt import decrypt, encrypt
 from .enums import Equipment
@@ -22,7 +23,7 @@ EQUIPMENT_TIER_LOOKUP: dict[int, str] = {1: "One", 2: "Two", 3: "Three"}
 
 
 class Save:
-    TUI_ALLOWED_OPERATIONS: ClassVar[set[tuple[str, str]]] = {
+    TUI_ALLOWED_OPERATIONS: Final[set[tuple[str, str]]] = {
         ("Unlock Gear", "unlock-gear"),
         ("Add Gear", "add-gear"),
         ("Edit Money", "edit-money"),
@@ -48,6 +49,10 @@ class Save:
         if not self._written and not exc_type:
             self.write()
 
+    def _reload(self) -> None:
+        self.unlockable_manager = UnlockableManager(self)
+        self._written = False
+
     @classmethod
     def from_path(cls, path: pathlib.Path, *, create_backup: bool = True) -> Self:
         data = path.read_bytes()
@@ -63,14 +68,21 @@ class Save:
         return cls(data=decrypt(path=path, password=CURRENT_SAVE_KEY), path=path, create_backup=create_backup)
 
     def create_backup(self) -> pathlib.Path:
-        backup_path = self.save_path.with_suffix(".txt.bak")
+        now = datetime.datetime.now(datetime.UTC)
+        now_str = now.strftime("%Y-%m-%d_%H:%M:%S")
+        backup_path = self.save_path.with_name(self.save_path.name + f"-{now_str}").with_suffix(".txt.bak")
         if backup_path.exists():
             backup_path.unlink(missing_ok=True)
 
         LOGGER.info("Creating backup at %r", str(backup_path))
         return self.save_path.copy(backup_path)
 
-    def get_value[T: Any = Any](self, key: str, _: type[T] = MISSING) -> T:
+    def has_value(self, key: str) -> bool:
+        return key in self._data
+
+    def get_value[T: Any = Any](self, key: str, _: type[T] = MISSING, *, default: T = MISSING) -> T:
+        if default is not MISSING:
+            return cast("T", self._data.get(key, {}).get("value", default))
         return cast("T", self._data[key]["value"])
 
     @property
@@ -134,6 +146,11 @@ class Save:
         for equipment in EQUIPMENT:
             self._do_add_equipment(equipment, amount, bulk=True)
 
+    def has_unlockable_(self, name: str) -> bool:
+        keys = [f"{name}{progress}" for progress in ["Completed", "Progression", "Received"]]
+
+        return any(key in self._data for key in keys)
+
     def manage_unlockable(self, unlockable: CURRENT_UNLOCKABLES) -> Achievement:
         return getattr(self.unlockable_manager, unlockable)
 
@@ -145,7 +162,7 @@ class Save:
 
     def _merge_unlockables(self) -> None:
         for attr in self.unlockable_manager.__slots__:
-            if attr.startswith("_"):
+            if attr.startswith("_") or attr not in self.unlockable_manager:
                 continue
 
             unlockable = self.unlockable_manager.get_handler(attr)  # pyright: ignore[reportArgumentType] # our slots are the literal

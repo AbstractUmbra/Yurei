@@ -92,11 +92,9 @@ class YureiApp(App[None]):
             self._has_touched_editor = True
 
     async def action_open_file(self, default: bool = False) -> None:  # noqa: FBT001, FBT002 # i dont think kwargs are supported
-        pane = self.query_one("#left-pane", PathInputBrowser)
+        pane = self.query_one("#left-pane")
         if default:
-            self.save_file = Save.from_default_path()
-            text_area = self.query_one("#decrypted-output", CodeEditor)
-            text_area.replace(insert=self.save_file.to_json_string(), start=(0, 0), end=text_area.document.end)
+            return await self.file_selected(None)
 
         # reload input
         input_ = pane.query_one("#path-input", Input)
@@ -112,13 +110,14 @@ class YureiApp(App[None]):
         else:
             await tree.reload()
             tree.focus()
-            return
+            return None
 
         await pane.remove()
         browser = PathInputBrowser("left-pane", path=".")
         await self.mount(browser)
         directory_tree = browser.query_one("#open-save-tree", SafeDirectoryTree)
         directory_tree.focus()
+        return None
 
     async def action_save_file(self) -> None:
         if not getattr(self, "save_file", None):
@@ -138,17 +137,21 @@ class YureiApp(App[None]):
         text_area.replace(insert=self.save_file.to_json_string(), start=(0, 0), end=text_area.document.end)
         text_area.refresh()
 
-    async def file_selected(self, file: pathlib.Path, /) -> None:
-        self.save_file = Save.from_path(file)
+    async def file_selected(self, file: pathlib.Path | None = None, /) -> None:
+        self.save_file = Save.from_path(file) if file else Save.from_default_path()
         self.refresh_code_container()
 
         pane = self.query_one("#left-pane")
 
         await pane.remove_children()
         pane.border_title = "Options"
-        radio_set = RadioSet(
-            *[RadioButton(item[0], id=item[1]) for item in sorted(self.save_file.TUI_ALLOWED_OPERATIONS)], id="methods"
-        )
+        buttons: list[RadioButton] = []
+        for item in sorted(self.save_file.TUI_ALLOWED_OPERATIONS):
+            if item[1] == "manage-unlockables" and not self.save_file.unlockable_manager:
+                continue
+            buttons.append(RadioButton(item[0], id=item[1]))
+
+        radio_set = RadioSet(*buttons, id="methods")
         await pane.mount(radio_set)
         self.set_focus(radio_set)
 
