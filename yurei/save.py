@@ -87,7 +87,7 @@ class Save:
 
     @property
     def level(self) -> int:
-        if self.prestige > 0:
+        if self.prestige < 1:
             return self._data["NewLevel"]["value"]
         return self._data["Level"]["value"]
 
