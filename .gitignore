@@ -10,6 +10,5 @@ wheels/
 .venv
 
 # my stuff
-decrypted
-_previously_decrypted_file.json
+*.json
 *.txt.bak

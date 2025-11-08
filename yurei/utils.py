@@ -98,3 +98,18 @@ def human_join(items: Iterable[str], separator: str = ", ", last_separator: str 
     if len(items) == 2:
         return items[0] + " and " + items[1]
     return separator.join(items[:-1]) + last_separator + items[-1]
+
+
+def get_save_password(*, environment_key_name: str | None = None, password_file: pathlib.Path | None = None) -> str:
+    if not environment_key_name and not password_file:
+        raise ValueError("Either `environment_key_name` or `password_file` are required.")
+
+    if environment_key_name:
+        env = os.getenv(environment_key_name)
+        if not env:
+            return os.environ["YUREI_PASSWORD"]
+        return env
+
+    assert password_file  # guarded
+    with password_file.open("r", encoding="utf-8") as fp:
+        return fp.read().strip()

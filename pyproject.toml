@@ -54,8 +54,8 @@ dev-mode-dirs = ["."]
 ignore-vcs = true
 
 [tool.hatch.build.targets.sdist]
-exclude = ["docs", ".github"]
-include = ["yurei/*", "css/*", "LICENSE"]
+exclude = ["docs", ".github", ".venv", ".ruff_cache", "dist"]
+include = ["yurei/*", "css/*", "resources/*", "LICENSE"]
 skip-excluded-dirs = false
 
 [tool.hatch.build.targets.wheel]
