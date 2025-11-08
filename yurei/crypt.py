@@ -26,14 +26,14 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from Crypto import Random  # noqa: S413 # not `pycrypto`
 from Crypto.Cipher import AES  # noqa: S413 # not `pycrypto`
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Util.Padding import pad, unpad
 
-from .utils import from_json
+from .utils import MISSING, from_json
 
 SHITTY_NEWTONSOFT_SUB_PATTERN: re.Pattern[str] = re.compile(r"(?<={|,)\s*(\d+)\s*:")
 
@@ -88,9 +88,14 @@ def encrypt(*, path: str | PathLike[str] | Path | None = None, data: bytes | Non
     return init_vector + cipher.encrypt(padded_data)
 
 
-def decrypt(
-    *, path: str | PathLike[str] | Path | None = None, data: bytes | None = None, password: str, strip_type_key: bool = False
-) -> Any:  # it returns the type of file we decrypt but alas
+def decrypt[T: Any](
+    *,
+    path: str | PathLike[str] | Path | None = None,
+    data: bytes | None = None,
+    password: str,
+    strip_type_key: bool = False,
+    return_type: type[T] = MISSING,  # noqa: ARG001
+) -> T:  # it returns the type of file we decrypt but alas
     if not path and not data:
         raise ValueError("Either `path` or `data` must be provided.")
 
@@ -123,4 +128,4 @@ def decrypt(
     resolved_data = _resolve_shitty_newtonsoft_int_dict_keys(resolved_data)
     json_data = from_json(resolved_data)
 
-    return _strip_shitty_type_kv(json_data) if strip_type_key else json_data  # pyright: ignore[reportArgumentType] # nested typed
+    return cast("T", _strip_shitty_type_kv(json_data) if strip_type_key else json_data)  # pyright: ignore[reportArgumentType] # nested typed

@@ -5,6 +5,7 @@ import sys
 from typing import Any
 
 from yurei.crypt import decrypt
+from yurei.types_ import Save as SaveType
 from yurei.utils import get_save_password, to_json
 
 GENERIC_PATTERN: re.Pattern[str] = re.compile(r"\[(?P<generic>[a-zA-Z0-9\.]+),")
@@ -71,7 +72,7 @@ def _resolve_type(inp: str) -> str:
 
 def create_json() -> dict[str, Any]:
     file = pathlib.Path("test_files/SaveFile-generic.txt")
-    data = decrypt(path=file, password=CURRENT_SAVE_KEY, strip_type_key=False)
+    data = decrypt(path=file, password=CURRENT_SAVE_KEY, strip_type_key=False, return_type=SaveType)
 
     # data is json
 

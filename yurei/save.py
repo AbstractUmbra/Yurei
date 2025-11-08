@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Final, Literal, Self, cast
 from .crypt import decrypt, encrypt
 from .enums import Equipment
 from .unlockable import UnlockableManager
-from .utils import MISSING, from_json, resolve_save_path, to_json
+from .utils import MISSING, from_json, get_save_password, resolve_save_path, to_json
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -20,6 +20,7 @@ TEMP_FILE = pathlib.Path(__file__).parent.parent / ("./_previously_decrypted_fil
 LOGGER = logging.getLogger(__name__)
 EQUIPMENT: set[str] = {e.value for e in Equipment}
 EQUIPMENT_TIER_LOOKUP: dict[int, str] = {1: "One", 2: "Two", 3: "Three"}
+CURRENT_SAVE_KEY = get_save_password(password_file=(pathlib.Path(__file__).parent.parent / "resources" / "save_password"))
 
 
 class Save:
@@ -34,7 +35,7 @@ class Save:
     __slots__ = ("_create_backup", "_data", "_written", "save_path", "unlockable_manager")
 
     def __init__(self, *, data: SaveType, path: pathlib.Path, create_backup: bool = True) -> None:
-        self._data = data
+        self._data: SaveType = data
         self.unlockable_manager = UnlockableManager(self)
         self.save_path = path
         self._create_backup = create_backup
@@ -49,6 +50,12 @@ class Save:
         if not self._written and not exc_type:
             self.write()
 
+    def __contains__(self, key: str) -> bool:
+        return self._has_value(key)
+
+    def __getitem__(self, key: str) -> Any:
+        return self.get_value(key)
+
     def _reload(self) -> None:
         self.unlockable_manager = UnlockableManager(self)
         self._written = False
@@ -56,16 +63,18 @@ class Save:
     @classmethod
     def from_path(cls, path: pathlib.Path, *, create_backup: bool = True) -> Self:
         data = path.read_bytes()
-        from . import CURRENT_SAVE_KEY  # noqa: PLC0415 # cyclic circumvention
 
-        return cls(data=decrypt(data=data, password=CURRENT_SAVE_KEY), path=path, create_backup=create_backup)
+        return cls(
+            data=decrypt(data=data, password=CURRENT_SAVE_KEY, return_type=SaveType), path=path, create_backup=create_backup
+        )
 
     @classmethod
     def from_default_path(cls, *, create_backup: bool = True) -> Self:
         path = resolve_save_path()
-        from . import CURRENT_SAVE_KEY  # noqa: PLC0415 # cyclic circumvention
 
-        return cls(data=decrypt(path=path, password=CURRENT_SAVE_KEY), path=path, create_backup=create_backup)
+        return cls(
+            data=decrypt(path=path, password=CURRENT_SAVE_KEY, return_type=SaveType), path=path, create_backup=create_backup
+        )
 
     def create_backup(self) -> pathlib.Path:
         now = datetime.datetime.now(datetime.UTC)
@@ -77,7 +86,7 @@ class Save:
         LOGGER.info("Creating backup at %r", str(backup_path))
         return self.save_path.copy(backup_path)
 
-    def has_value(self, key: str) -> bool:
+    def _has_value(self, key: str) -> bool:
         return key in self._data
 
     def get_value[T: Any = Any](self, key: str, _: type[T] = MISSING, *, default: T = MISSING) -> T:
