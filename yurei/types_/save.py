@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from .inner_types import Bool, ColourValue, DifficultyValue, Float, Int, SpecialPlayedMaps, String
+from .inner_types import Bool, ColourValue, Dict, DifficultyValue, Float, Int, List, SpecialPlayedMaps, String
 
 __all__ = ("Save",)
 
@@ -392,7 +392,7 @@ Save = TypedDict(
         "doorsMoved": Int,
         "fuseboxToggles": Int,
         "ghostDistanceTravelled": Float,
-        "ghostKills": dict[String, Int],
+        "ghostKills": Dict[str, int],
         "ghostsIdentifiedAmount": Int,
         "ghostsMisidentifiedAmount": Int,
         "ghostsRepelled": Int,
@@ -409,7 +409,7 @@ Save = TypedDict(
         "lightsSwitched": Int,
         "moneyEarned": Int,
         "moneySpent": Int,
-        "mostCommonGhosts": dict[String, Int],
+        "mostCommonGhosts": Dict[str, int],
         "objective0Completed": Int,
         "objective1Completed": Int,
         "objective2Completed": Int,
@@ -421,10 +421,10 @@ Save = TypedDict(
         "rangerChallengeCompleted": Int,
         "rangerChallengeProgression": Int,
         "rangerChallengeReceived": Int,
-        "recentPlayerIDS": list[String],
-        "recentPlayerNames": list[String],
-        "recentPlayerPlatformIDS": list[String],
-        "recentPlayerPlatforms": list[Int],
+        "recentPlayerIDS": List[str],
+        "recentPlayerNames": List[str],
+        "recentPlayerPlatformIDS": List[str],
+        "recentPlayerPlatforms": List[int],
         "revivedAmount": Int,
         "roomChanged": Int,
         "sanityGained": Float,

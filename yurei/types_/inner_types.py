@@ -4,7 +4,7 @@ if TYPE_CHECKING:
     from .colour import Colour
     from .difficulty import Difficulty
 
-__all__ = ("Bool", "ColourValue", "DifficultyValue", "Float", "Int", "String")
+__all__ = ("Bool", "ColourValue", "Dict", "DifficultyValue", "Float", "Int", "List", "String")
 
 
 class String(TypedDict):
@@ -25,6 +25,16 @@ class Float(TypedDict):
 class Bool(TypedDict):
     __type: Literal["bool"]
     value: bool
+
+
+class List[InnerTypeT](TypedDict):
+    __type: Literal["System.Collections.Generic.List"]
+    value: list[InnerTypeT]
+
+
+class Dict[KeyT, ValT](TypedDict):
+    __type: Literal["System.Collections.Generic.List"]
+    value: dict[KeyT, ValT]
 
 
 class ColourValue(TypedDict):

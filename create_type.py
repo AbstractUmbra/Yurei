@@ -1,18 +1,17 @@
-import json
 import pathlib
 import re
 import subprocess  # noqa: S404 # this is used as preflight on trusted input
 import sys
 from typing import Any
 
-from yurei import CURRENT_SAVE_KEY
 from yurei.crypt import decrypt
+from yurei.utils import get_save_password, to_json
 
 GENERIC_PATTERN: re.Pattern[str] = re.compile(r"\[(?P<generic>[a-zA-Z0-9\.]+),")
 TEMPLATE: str = r"""
 from typing import TypedDict
 
-from .inner_types import Bool, ColourValue, DifficultyValue, Float, Int, String, SpecialPlayedMaps
+from .inner_types import Bool, ColourValue, Dict, DifficultyValue, Float, Int, List, SpecialPlayedMaps, String
 
 __all__ = ("Save",)
 
@@ -28,13 +27,24 @@ LOOKUP = {
     "string": "String",
     "float": "Float",
     "bool": "Bool",
+    "int": "Int",
     "System.String": "String",
     "System.Int32": "Int",
     "Difficulty,Assembly-CSharp": "DifficultyValue",
 }
-
+PYTHON_TYPE_LOOKUP = {
+    "Color": "ColourValue",
+    "string": "str",
+    "float": "float",
+    "bool": "bool",
+    "int": "int",
+    "System.String": "str",
+    "System.Int32": "int",
+    "Difficulty,Assembly-CSharp": "DifficultyValue",
+}
 # usually because of dumb json issues with cs
-SPECIAL_CASES = {"playedMaps": "SpecialPlayedMaps"}
+SPECIAL_CASES = {"playedMaps": "SpecialPlayedMaps", "RoleType": "Int", "currentSeasonalEvent": "Int"}
+CURRENT_SAVE_KEY = get_save_password(password_file=(pathlib.Path(__file__).parent.parent / "resources" / "save_password"))
 
 
 def _extract_generic(inp: str) -> tuple[str, ...]:
@@ -48,25 +58,25 @@ def _extract_generic(inp: str) -> tuple[str, ...]:
 def _resolve_type(inp: str) -> str:
     if "System.Collections.Generic.Dictionary" in inp:
         key, val = _extract_generic(inp)
-        key, val = LOOKUP[key], LOOKUP[val]
-        return f"dict[{key}, {val}]"
+        key, val = PYTHON_TYPE_LOOKUP[key], PYTHON_TYPE_LOOKUP[val]
+        return f"Dict[{key}, {val}]"
 
     if "System.Collections.Generic.List" in inp:
         resolved, *_ = _extract_generic(inp)
-        resolved = LOOKUP[resolved]
-        return f"list[{resolved}]"
+        resolved = PYTHON_TYPE_LOOKUP[resolved]
+        return f"List[{resolved}]"
 
-    return LOOKUP.get(inp, "Int")
+    return LOOKUP[inp]
 
 
 def create_json() -> dict[str, Any]:
-    file = pathlib.Path("test_files/SaveFile.txt")
+    file = pathlib.Path("test_files/SaveFile-generic.txt")
     data = decrypt(path=file, password=CURRENT_SAVE_KEY, strip_type_key=False)
 
     # data is json
 
-    with pathlib.Path("decrypted").open("w", encoding="utf-8") as fp:
-        json.dump(data, fp)
+    with pathlib.Path("decrypted.json").open("w", encoding="utf-8") as fp:
+        fp.write(to_json(data))
 
     return dict(sorted(data.items()))
 
@@ -78,7 +88,11 @@ def parse_json(input_: dict[str, Any]) -> str:
         if k in SPECIAL_CASES:
             ret[k] = SPECIAL_CASES[k]
             continue
-        ret[k] = _resolve_type(type_)
+        try:
+            ret[k] = _resolve_type(type_)
+        except KeyError as err:
+            msg = f"Key {k!r} has an unknown type(s): {', '.join(map(repr, err.args))}"
+            raise KeyError(msg) from err
 
     return "{" + "\n".join([f'"{k}": {v},' for k, v in ret.items()]) + "}"
 
