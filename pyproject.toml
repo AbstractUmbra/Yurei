@@ -69,6 +69,7 @@ explicit = true
 [tool.ruff]
 line-length = 125
 target-version = "py314"
+extend-exclude = ["preflight/get_xp_scaling.py"] # it's a one time runner
 
 [tool.ruff.lint]
 preview = true
@@ -146,3 +147,4 @@ inline-quotes = "double"
 useLibraryCodeForTypes = true
 typeCheckingMode = "strict"
 pythonVersion = "3.14"
+exclude = ["preflight/get_xp_scaling.py", ".venv/", ".ruff_cache/"]

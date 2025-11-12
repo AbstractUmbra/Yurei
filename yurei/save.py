@@ -4,6 +4,7 @@ import pathlib
 from typing import TYPE_CHECKING, Any, Final, Literal, Self, cast
 
 from .crypt import decrypt, encrypt
+from .data import XPLevel
 from .enums import Equipment
 from .unlockable import UnlockableManager
 from .utils import MISSING, from_json, get_save_password, resolve_save_path, to_json
@@ -21,6 +22,7 @@ LOGGER = logging.getLogger(__name__)
 EQUIPMENT: set[str] = {e.value for e in Equipment}
 EQUIPMENT_TIER_LOOKUP: dict[int, str] = {1: "One", 2: "Two", 3: "Three"}
 CURRENT_SAVE_KEY = get_save_password(password_file=(pathlib.Path(__file__).parent.parent / "resources" / "save_password"))
+LEVEL_SCALES_FILE = pathlib.Path(__file__).parent.parent / "resources" / "levelscaling.json"
 
 
 class Save:
@@ -32,11 +34,12 @@ class Save:
         ("Manage Unlockables", "manage-unlockables"),
     }
 
-    __slots__ = ("_create_backup", "_data", "_written", "save_path", "unlockable_manager")
+    __slots__ = ("_create_backup", "_data", "_written", "save_path", "unlockable_manager", "xp_manager")
 
     def __init__(self, *, data: SaveType, path: pathlib.Path, create_backup: bool = True) -> None:
         self._data: SaveType = data
         self.unlockable_manager = UnlockableManager(self)
+        self.xp_manager = XPLevel.from_file(LEVEL_SCALES_FILE)
         self.save_path = path
         self._create_backup = create_backup
         self._written: bool = False
@@ -103,6 +106,8 @@ class Save:
     @level.setter
     def level(self, value: int) -> None:
         LOGGER.info("Setting level to %s", value)
+        self._data["Experience"]["value"] = 0
+
         if self.prestige < 1:
             self._data["NewLevel"]["value"] = value
         else:
