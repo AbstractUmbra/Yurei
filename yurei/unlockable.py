@@ -7,10 +7,24 @@ if TYPE_CHECKING:
 __all__ = ("Achievement", "UnlockableManager")
 
 type CURRENT_UNLOCKABLES = Literal[
-    "farmhouse_fieldwork", "lighthouse_ferrymen", "lighthouse_keeper", "ranger_challenge", "sunny_meadows_survival"
+    "farmhouse_fieldwork",
+    "lighthouse_ferrymen",
+    "lighthouse_keeper",
+    "ranger_challenge",
+    "sunny_meadows_survival",
+    "nells_diner",
+    "moneybags",
+    "ghost_in_the_machine",
 ]
 type CURRENT_UNLOCKABLES_DATA_KEY = Literal[
-    "FarmhouseFieldwork", "lighthouseFerrymen", "lighthouseKeeper", "rangerChallenge", "sunnyMeadowsSurvival"
+    "FarmhouseFieldwork",
+    "lighthouseFerrymen",
+    "dinerGhostInTheMachine",
+    "lighthouseKeeper",
+    "rangerChallenge",
+    "sunnyMeadowsSurvival",
+    "NellsDiner",
+    "Moneybags",
 ]
 LOOKUP: dict[str, CURRENT_UNLOCKABLES] = {
     "Farmhouse Fieldwork": "farmhouse_fieldwork",
@@ -18,6 +32,8 @@ LOOKUP: dict[str, CURRENT_UNLOCKABLES] = {
     "Lighthouse Keeper": "lighthouse_keeper",
     "Ranger Challenge": "ranger_challenge",
     "Sunny Meadows Survival": "sunny_meadows_survival",
+    "Nell's Diner": "nells_diner",
+    "Moneybags": "moneybags",
 }
 REVERSE_LOOKUP: dict[CURRENT_UNLOCKABLES, str] = {v: k for k, v in LOOKUP.items()}
 DATA_KEY_TO_PRETTY_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, str] = {
@@ -26,6 +42,9 @@ DATA_KEY_TO_PRETTY_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, str] = {
     "lighthouseKeeper": "Lighthouse Keeper",
     "rangerChallenge": "Ranger Challenge",
     "sunnyMeadowsSurvival": "Sunny Meadows Survival",
+    "dinerGhostInTheMachine": "Ghost in the Machine",
+    "NellsDiner": "Nell's Diner",
+    "Moneybags": "Moneybags",
 }
 DATA_KEY_TO_ATTRIBUTE_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, CURRENT_UNLOCKABLES] = {
     "FarmhouseFieldwork": "farmhouse_fieldwork",
@@ -33,6 +52,9 @@ DATA_KEY_TO_ATTRIBUTE_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, CURRENT_UNLOCKA
     "lighthouseKeeper": "lighthouse_keeper",
     "rangerChallenge": "ranger_challenge",
     "sunnyMeadowsSurvival": "sunny_meadows_survival",
+    "NellsDiner": "nells_diner",
+    "dinerGhostInTheMachine": "ghost_in_the_machine",
+    "Moneybags": "moneybags",
 }
 
 
@@ -108,8 +130,11 @@ class UnlockableManager:
     __slots__ = (
         "_save",
         "farmhouse_fieldwork",
+        "ghost_in_the_machine",
         "lighthouse_ferrymen",
         "lighthouse_keeper",
+        "moneybags",
+        "nells_diner",
         "ranger_challenge",
         "sunny_meadows_survival",
     )
@@ -146,6 +171,24 @@ class UnlockableManager:
             completed=save.get_value("sunnyMeadowsSurvivalCompleted", int, default=0),
             progression=save.get_value("sunnyMeadowsSurvivalProgression", int, default=0),
             received=save.get_value("sunnyMeadowsSurvivalReceived", int, default=0),
+        )
+        self.nells_diner = Achievement(
+            "NellsDiner",
+            completed=save.get_value("NellsDinerCompleted", int, default=0),
+            progression=save.get_value("NellsDinerProgression", int, default=0),
+            received=save.get_value("NellsDinerReceived", int, default=0),
+        )
+        self.ghost_in_the_machine = Achievement(
+            "dinerGhostInTheMachine",
+            completed=save.get_value("dinerGhostInTheMachineCompleted", int, default=0),
+            progression=save.get_value("dinerGhostInTheMachineProgression", int, default=0),
+            received=save.get_value("dinerGhostInTheMachineReceived", int, default=0),
+        )
+        self.moneybags = Achievement(
+            "Moneybags",
+            completed=save.get_value("MoneybagsCompleted", int, default=0),
+            progression=save.get_value("MoneybagsProgression", int, default=0),
+            received=save.get_value("MoneybagsReceived", int, default=0),
         )
 
     def __contains__(self, key: str, /) -> bool:

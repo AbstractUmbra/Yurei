@@ -1,3 +1,4 @@
+import argparse
 import pathlib
 import re
 import subprocess  # noqa: S404 # this is used as preflight on trusted input
@@ -45,7 +46,21 @@ PYTHON_TYPE_LOOKUP = {
 }
 # usually because of dumb json issues with cs
 SPECIAL_CASES = {"playedMaps": "SpecialPlayedMaps", "RoleType": "Int", "currentSeasonalEvent": "Int"}
-CURRENT_SAVE_KEY = get_save_password(password_file=(pathlib.Path(__file__).parent.parent / "resources" / "save_password"))
+CURRENT_SAVE_KEY = get_save_password(password_file=(pathlib.Path(__file__).parent / "resources" / "save_password"))
+
+
+class ProgramNamespace(argparse.Namespace):
+    file: pathlib.Path
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-f", "--file", type=pathlib.Path, required=True, dest="file")
+
+args = parser.parse_args(namespace=ProgramNamespace())
+
+if not args.file.exists():
+    msg_ = f"Provided file {args.file} could not be found."
+    raise FileNotFoundError(msg_)
 
 
 def _extract_generic(inp: str) -> tuple[str, ...]:
@@ -71,8 +86,7 @@ def _resolve_type(inp: str) -> str:
 
 
 def create_json() -> dict[str, Any]:
-    file = pathlib.Path("test_files/SaveFile-generic.txt")
-    data = decrypt(path=file, password=CURRENT_SAVE_KEY, strip_type_key=False, return_type=SaveType)
+    data = decrypt(path=args.file, password=CURRENT_SAVE_KEY, strip_type_key=False, return_type=SaveType)
 
     # data is json
 

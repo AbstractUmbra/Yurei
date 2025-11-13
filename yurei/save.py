@@ -6,13 +6,13 @@ from typing import TYPE_CHECKING, Any, Final, Literal, Self, cast
 from .crypt import decrypt, encrypt
 from .data import XPLevel
 from .enums import Equipment
+from .types_.save import Save as SaveType
 from .unlockable import UnlockableManager
 from .utils import MISSING, from_json, get_save_password, resolve_save_path, to_json
 
 if TYPE_CHECKING:
     from types import TracebackType
 
-    from .types_.save import Save as SaveType
     from .unlockable import CURRENT_UNLOCKABLES, Achievement
 
 __all__ = ("Save",)
