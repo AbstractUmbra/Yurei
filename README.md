@@ -45,3 +45,13 @@ If you use the `web` extra, you can use the `yurei-web`, but this is experimenta
 #### Help wanted
 
 If you're good at design/visuals then I'd love for you to help make this prettier. I for one am terrible at making things look nice.
+
+#### Issues/Help
+
+If you require assistance with this tool then you're free to open an issue on the repo or you can join my Discord server below:
+
+<div align="left">
+    <a href="https://discord.gg/aYGYJxwqe5">
+        <img src="https://discordapp.com/api/guilds/705500489248145459/widget.png?style=banner2" alt="Discord Server"/>
+    </a>
+</div>
