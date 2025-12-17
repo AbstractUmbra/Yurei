@@ -81,8 +81,8 @@ class Save:
 
     def create_backup(self) -> pathlib.Path:
         now = datetime.datetime.now(datetime.UTC)
-        now_str = now.strftime("%Y-%m-%d_%H:%M:%S")
-        backup_path = self.save_path.with_stem(self.save_path.name + f"-{now_str}").with_suffix(".txt.bak")
+        now_str = now.strftime("%Y-%m-%d_%H-%M-%S")
+        backup_path = self.save_path.with_stem(self.save_path.name + f"-{now_str}").with_suffix(".bak")
         if backup_path.exists():
             backup_path.unlink(missing_ok=True)
 
