@@ -99,7 +99,7 @@ class Save:
 
     @property
     def level(self) -> int:
-        if self.prestige < 1:
+        if self.prestige >= 1:
             return self._data["NewLevel"]["value"]
         return self._data["Level"]["value"]
 
@@ -108,11 +108,11 @@ class Save:
         LOGGER.info("Setting level to %s", value)
         self._data["Experience"]["value"] = 0
 
-        if self.prestige < 1:
+        if self.prestige >= 1:
             self._data["NewLevel"]["value"] = value
         else:
-            self._data["NewLevel"]["value"] = 100
-            self._data["Level"]["value"] = value
+            self._data["Level"]["value"] = 100
+            self._data["NewLevel"]["value"] = value
 
     @property
     def prestige(self) -> int:
