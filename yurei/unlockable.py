@@ -82,6 +82,12 @@ class Achievement:
         if max_progression_value:
             self.__class__.MAX_PROGRESSION_VALUE = max_progression_value
 
+    def __repr__(self) -> str:
+        return (
+            f"<Achievement {self.pretty_name} completed={self.completed} "
+            f"received={self.received} progression={self.progression}>"
+        )
+
     @property
     def pretty_name(self) -> str:
         return DATA_KEY_TO_PRETTY_LOOKUP[self.name]

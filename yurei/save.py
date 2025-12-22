@@ -185,7 +185,7 @@ class Save:
 
             unlockable = self.unlockable_manager.get_handler(attr)  # pyright: ignore[reportArgumentType] # our slots are the literal
             unlockable_data = unlockable.to_data()
-            LOGGER.info("UNLOCKABLE: Merging %r", str(unlockable_data))
+            LOGGER.info("UNLOCKABLE: Merging %r", unlockable)
             self._data.update(unlockable_data)  # pyright: ignore[reportArgumentType, reportCallIssue] # our keys match but we can't narrow, alas
 
     def write(self) -> pathlib.Path:
