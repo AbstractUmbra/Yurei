@@ -127,7 +127,7 @@ class Achievement:
         return {
             f"{self.name}Completed": {"__type": "int", "value": self._completed},
             f"{self.name}Received": {"__type": "int", "value": self._received},
-            f"{self.name}Progression": {"__type": "int", "value": self.progression},
+            f"{self.name}Progression": {"__type": "int", "value": int(self.progression)},
         }
 
 
