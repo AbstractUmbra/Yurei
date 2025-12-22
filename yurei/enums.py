@@ -30,8 +30,10 @@ class Equipment(StrEnum):
 
 class Ghost(StrEnum):
     banshee = "Banshee"
+    dayan = "Dayan"
     demon = "Demon"
     deogen = "Deogen"
+    gallu = "Gallu"
     goryo = "Goryo"
     hantu = "Hantu"
     jinn = "Jinn"
@@ -40,6 +42,7 @@ class Ghost(StrEnum):
     moroi = "Moroi"
     myling = "Myling"
     obake = "Obake"
+    obambo = "Obambo"
     oni = "Oni"
     onryo = "Onryo"
     phantom = "Phantom"
