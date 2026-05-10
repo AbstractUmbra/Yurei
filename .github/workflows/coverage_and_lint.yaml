@@ -38,7 +38,7 @@ jobs:
               uses: jakebailey/pyright-action@v3
               with:
                   warnings: false
-                  verify-types: "hondana"
+                  verify-types: "yurei"
                   ignore-external: true
                   annotate: ${{ matrix.python-version != '3.x' && 'all' || 'none' }}
 

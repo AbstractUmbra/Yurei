@@ -64,8 +64,12 @@ skip-excluded-dirs = false
 
 [tool.hatch.build.targets.wheel]
 packages = ["./yurei"]
-
-include = ["yurei/save.lark", "yurei/tui/css/**/*", "yurei/resources/**/*"]
+include = [
+    "yurei/save.lark",
+    "yurei/tui/css/**/*",
+    "yurei/resources/**/*",
+    "yurei/py.typed",
+]
 
 [[tool.uv.index]]
 name = "umbra"
