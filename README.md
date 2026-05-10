@@ -31,13 +31,25 @@ uv add 'git+https://github.com/AbstractUmbra/Yurei'
 Once installed you can then run the app with the `yurei` executable.
 If you use the `web` extra, you can use the `yurei-web`, but this is experimental and (as of the commit date) currently does not work on Python 3.14+.
 
+## How to use this
+
+Yurei is available as both Python source library directly usable from Python code, or as a TUI application for direct us.
+
+### Code examples
+
+Please check out the [examples directory](./examples) for more.
+
+### TUI
+
+To run the application you need to execute this via `python -m yurei` or `yurei` if your venv is active!
+I tried to make this screen as intuitive as possible and include shortcut keys where I could. Please raise an issue if you spot a bug or something feels off!
 
 #### To-Do list
 
 - [x] Money
 - [x] Levels and Prestige values
 - [x] Gear unlock and addition
-- [x] Achievement managment
+- [x] Achievement management
 - [x] Easter Egg management
 - [ ] Ghost/spirit values, death and encounter
 

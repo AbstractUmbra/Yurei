@@ -153,4 +153,4 @@ inline-quotes = "double"
 useLibraryCodeForTypes = true
 typeCheckingMode = "strict"
 pythonVersion = "3.14"
-exclude = ["preflight/get_xp_scaling.py", ".venv/", ".ruff_cache/"]
+include = ["yurei/**/*.py", "examples/**/*.py"]

@@ -67,8 +67,7 @@ def encrypt(*, path: str | PathLike[str] | Path | None = None, data: bytes | Non
         if not isinstance(path, Path):
             path = Path(path)
 
-        with path.open("rb") as fp:
-            data_to_encrypt = fp.read()
+        data_to_encrypt = path.read_bytes()
     else:
         data_to_encrypt = data
         assert data_to_encrypt  # guarded earlier
@@ -104,8 +103,7 @@ def decrypt[T: Any](
         if not isinstance(path, Path):
             path = Path(path)
 
-        with path.open("rb") as fp:
-            read_data = fp.read()
+        read_data = path.read_bytes()
     else:
         read_data = data
         assert read_data  # guarded earlier
