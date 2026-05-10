@@ -15,6 +15,7 @@ type CURRENT_UNLOCKABLES = Literal[
     "nells_diner",
     "moneybags",
     "ghost_in_the_machine",
+    "tanglewood",
 ]
 type CURRENT_UNLOCKABLES_DATA_KEY = Literal[
     "FarmhouseFieldwork",
@@ -25,6 +26,7 @@ type CURRENT_UNLOCKABLES_DATA_KEY = Literal[
     "sunnyMeadowsSurvival",
     "NellsDiner",
     "Moneybags",
+    "Tanglewood",
 ]
 LOOKUP: dict[str, CURRENT_UNLOCKABLES] = {
     "Farmhouse Fieldwork": "farmhouse_fieldwork",
@@ -34,6 +36,7 @@ LOOKUP: dict[str, CURRENT_UNLOCKABLES] = {
     "Sunny Meadows Survival": "sunny_meadows_survival",
     "Nell's Diner": "nells_diner",
     "Moneybags": "moneybags",
+    "Tanglewood": "tanglewood",
 }
 REVERSE_LOOKUP: dict[CURRENT_UNLOCKABLES, str] = {v: k for k, v in LOOKUP.items()}
 DATA_KEY_TO_PRETTY_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, str] = {
@@ -45,6 +48,7 @@ DATA_KEY_TO_PRETTY_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, str] = {
     "dinerGhostInTheMachine": "Ghost in the Machine",
     "NellsDiner": "Nell's Diner",
     "Moneybags": "Moneybags",
+    "Tanglewood": "Tanglewood",
 }
 DATA_KEY_TO_ATTRIBUTE_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, CURRENT_UNLOCKABLES] = {
     "FarmhouseFieldwork": "farmhouse_fieldwork",
@@ -55,6 +59,7 @@ DATA_KEY_TO_ATTRIBUTE_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, CURRENT_UNLOCKA
     "NellsDiner": "nells_diner",
     "dinerGhostInTheMachine": "ghost_in_the_machine",
     "Moneybags": "moneybags",
+    "Tanglewood": "tanglewood",
 }
 
 
@@ -143,6 +148,7 @@ class UnlockableManager:
         "nells_diner",
         "ranger_challenge",
         "sunny_meadows_survival",
+        "tanglewood",
     )
 
     def __init__(self, save: Save, /) -> None:
@@ -195,6 +201,13 @@ class UnlockableManager:
             completed=save.get_value("MoneybagsCompleted", int, default=0),
             progression=save.get_value("MoneybagsProgression", int, default=0),
             received=save.get_value("MoneybagsReceived", int, default=0),
+        )
+        self.tanglewood = Achievement(
+            "Tanglewood",
+            completed=save.get_value("TanglewoodCompleted", int, default=0),
+            progression=save.get_value("TanglewoodProgression", int, default=0),
+            received=save.get_value("TanglewoodReceived", int, default=0),
+            max_progression_value=50,
         )
 
     def __contains__(self, key: str, /) -> bool:
