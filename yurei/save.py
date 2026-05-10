@@ -24,8 +24,8 @@ TEMP_FILE = pathlib.Path(__file__).parent.parent / ("./_previously_decrypted_fil
 LOGGER = logging.getLogger(__name__)
 EQUIPMENT: set[str] = {e.value for e in Equipment}
 EQUIPMENT_TIER_LOOKUP: dict[int, str] = {1: "One", 2: "Two", 3: "Three"}
-CURRENT_SAVE_KEY = get_save_password(password_file=(pathlib.Path(__file__).parent.parent / "resources" / "save_password"))
-LEVEL_SCALES_FILE = pathlib.Path(__file__).parent.parent / "resources" / "levelscaling.json"
+CURRENT_SAVE_KEY = get_save_password(password_file=(pathlib.Path(__file__).parent / "resources" / "save_password"))
+LEVEL_SCALES_FILE = pathlib.Path(__file__).parent / "resources" / "levelscaling.json"
 
 
 class Save:

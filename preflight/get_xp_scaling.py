@@ -14,7 +14,7 @@ import bs4
 import requests
 
 URL = "https://phasmophobia.fandom.com/wiki/Experience"
-RESOURCE_FILE = pathlib.Path(__file__).parent.parent / "resources" / "levelscaling.json"
+RESOURCE_FILE = pathlib.Path(__file__).parent.parent / "yurei" / "resources" / "levelscaling.json"
 
 
 class Scale(TypedDict):

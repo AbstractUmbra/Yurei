@@ -49,7 +49,7 @@ PYTHON_TYPE_LOOKUP = {
 }
 # usually because of dumb json issues with cs
 SPECIAL_CASES = {"playedMaps": "SpecialPlayedMaps", "RoleType": "Int", "currentSeasonalEvent": "Int"}
-CURRENT_SAVE_KEY = get_save_password(password_file=(pathlib.Path(__file__).parent / "resources" / "save_password"))
+CURRENT_SAVE_KEY = get_save_password(password_file=(pathlib.Path(__file__).parent / "yurei" / "resources" / "save_password"))
 
 
 class ProgramNamespace(argparse.Namespace):
@@ -93,8 +93,7 @@ def create_json() -> dict[str, Any]:
 
     # data is json
 
-    with pathlib.Path("decrypted.json").open("w", encoding="utf-8") as fp:
-        fp.write(to_json(data))
+    pathlib.Path("decrypted.json").write_text(to_json(data), encoding="utf-8")
 
     return dict(sorted(data.items()))
 
@@ -118,8 +117,7 @@ def parse_json(input_: dict[str, Any]) -> str:
 def main() -> None:
     json = create_json()
     type_ = TEMPLATE.format_map({"keyvalmap": parse_json(json)})
-    with pathlib.Path("yurei/types_/save.py").open("w", encoding="utf-8") as fp:
-        fp.write(type_)
+    pathlib.Path("yurei/types_/save.py").write_text(type_, encoding="utf-8")
 
     sys.exit(subprocess.Popen("ruff format yurei/types_/save.py", shell=True).returncode)  # noqa: S602, S607 # this is used as preflight on trusted input
 

@@ -44,7 +44,7 @@ class YureiApp(App[None]):
         ("O", "open_file(True)", "Open the default save file at known path"),
         Binding("ctrl+w", "save_file", "Save the current edits to the selected file", priority=True),
     ]
-    CSS_PATH = "../../css/layout.tcss"
+    CSS_PATH = "./css/layout.tcss"
     TITLE = "Yurei"
     SUB_TITLE = "A Phasmophobia Save editor"
 

@@ -37,7 +37,7 @@ speed = ["orjson>=3.11.3"]
 web = ["textual-serve>=1.1.2,<2"]
 
 [dependency-groups]
-dev = ["ruff==0.14.1", "textual-dev>=1.8.0,<2"]
+dev = ["ruff", "textual-dev>=1.8.0,<2"]
 
 [tool.uv]
 package = true
@@ -59,11 +59,13 @@ ignore-vcs = true
 
 [tool.hatch.build.targets.sdist]
 exclude = ["docs", ".github", ".venv", ".ruff_cache", "dist"]
-include = ["yurei/*", "css/*", "resources/*", "LICENSE"]
+include = ["yurei/*", "LICENSE"]
 skip-excluded-dirs = false
 
 [tool.hatch.build.targets.wheel]
 packages = ["./yurei"]
+
+include = ["yurei/save.lark", "yurei/tui/css/**/*", "yurei/resources/**/*"]
 
 [[tool.uv.index]]
 name = "umbra"

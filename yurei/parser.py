@@ -1,3 +1,4 @@
+import pathlib
 from dataclasses import dataclass
 from typing import Any, Literal
 
@@ -62,4 +63,5 @@ class ES3Transformer(Transformer[ES3Value, Any]):
         return list(items)
 
 
-PARSER = Lark.open("save.lark", parser="lalr", transformer=ES3Transformer(), propagate_positions=True)  # pyright: ignore[reportUnknownMemberType] # lark types aren't complete
+LARK_FILE = pathlib.Path(__file__).parent / "save.lark"
+PARSER = Lark.open(str(LARK_FILE), parser="lalr", transformer=ES3Transformer(), propagate_positions=True)  # pyright: ignore[reportUnknownMemberType] # lark types aren't complete
