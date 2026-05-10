@@ -12,3 +12,4 @@ wheels/
 # my stuff
 *.json
 *.txt.bak
+*.lnk
