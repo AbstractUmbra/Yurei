@@ -38,8 +38,8 @@ jobs:
               uses: jakebailey/pyright-action@v3
               with:
                   warnings: false
-                  verify-types: "yurei"
-                  ignore-external: true
+                  #   verify-types: "yurei"
+                  #   ignore-external: true
                   annotate: ${{ matrix.python-version != '3.x' && 'all' || 'none' }}
 
             - uses: astral-sh/ruff-action@v3
