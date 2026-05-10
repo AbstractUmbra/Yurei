@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from .inner_types import Bool, ColourValue, Dict, DifficultyValue, Float, Int, List, SpecialPlayedMaps, String
+from .inner_types import Bool, ColourValue, Dict, DifficultyValue, ES3DictInner, Float, Int, List, SpecialPlayedMaps, String
 
 __all__ = ("Save",)
 
@@ -30,6 +30,7 @@ Save = TypedDict(
         "Bone9": Int,
         "CameraInventory": Int,
         "CandleInventory": Int,
+        "CardThemeIndex": Int,
         "Crucifix-1Tier": Int,
         "Crucifix0Tier": Int,
         "Crucifix1Tier": Int,
@@ -133,6 +134,7 @@ Save = TypedDict(
         "IgniterTierThreeUnlockOwned": Bool,
         "IgniterTierTwoUnlockOwned": Bool,
         "InventoryTutorialComplete": Bool,
+        "LastCustomize": Int,
         "LastDifficulty": DifficultyValue,
         "LastLoadout": Int,
         "LastMode": Int,
@@ -142,6 +144,7 @@ Save = TypedDict(
         "Loadout0Name": String,
         "Loadout3Name": String,
         "LoadoutTutorialComplete": Bool,
+        "LocalPlayerOutfit": ES3DictInner,
         "MirrorsFound": Int,
         "MoneybagsCompleted": Int,
         "MoneybagsProgression": Int,
@@ -191,6 +194,7 @@ Save = TypedDict(
         "Player1Color": ColourValue,
         "Player2Color": ColourValue,
         "Player3Color": ColourValue,
+        "PlayerWardrobe": ES3DictInner,
         "PlayersMoney": Int,
         "Prestige": Int,
         "PrestigeIndex": Int,
@@ -269,6 +273,7 @@ Save = TypedDict(
         "SpiritBoxTierTwoUnlockOwned": Bool,
         "StrongFlashlightInventory": Int,
         "SummoningCirclesUsed": Int,
+        "TanglewoodProgression": Int,
         "TarotDeath": Int,
         "TarotDevil": Int,
         "TarotFool": Int,

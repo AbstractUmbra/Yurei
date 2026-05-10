@@ -1,0 +1,28 @@
+?start: value
+
+?value: object
+      | array
+      | string
+      | SIGNED_NUMBER      -> number
+      | "true"             -> true
+      | "false"            -> false
+      | "null"             -> null
+
+array : "[" [value ("," value)*] "]"
+
+object : "{" [object_item ("," object_item)*] "}"
+
+?object_item : member
+             | dict_entry
+
+member : string ":" value
+
+dict_entry : object ":" value
+
+string : ESCAPED_STRING
+
+%import common.ESCAPED_STRING
+%import common.SIGNED_NUMBER
+%import common.WS
+
+%ignore WS

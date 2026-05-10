@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 import logging
 import pathlib
@@ -6,13 +8,14 @@ from typing import TYPE_CHECKING, Any, Final, Literal, Self, cast
 from .crypt import decrypt, encrypt
 from .data import XPLevel
 from .enums import Equipment
-from .types_.save import Save as SaveType
+from .serializer import ES3Serializer
 from .unlockable import UnlockableManager
 from .utils import MISSING, from_json, get_save_password, resolve_save_path, to_json
 
 if TYPE_CHECKING:
     from types import TracebackType
 
+    from .types_.save import Save as SaveType
     from .unlockable import CURRENT_UNLOCKABLES, Achievement
 
 __all__ = ("Save",)
@@ -67,17 +70,13 @@ class Save:
     def from_path(cls, path: pathlib.Path, *, create_backup: bool = True) -> Self:
         data = path.read_bytes()
 
-        return cls(
-            data=decrypt(data=data, password=CURRENT_SAVE_KEY, return_type=SaveType), path=path, create_backup=create_backup
-        )
+        return cls(data=decrypt(data=data, password=CURRENT_SAVE_KEY), path=path, create_backup=create_backup)
 
     @classmethod
     def from_default_path(cls, *, create_backup: bool = True) -> Self:
         path = resolve_save_path()
 
-        return cls(
-            data=decrypt(path=path, password=CURRENT_SAVE_KEY, return_type=SaveType), path=path, create_backup=create_backup
-        )
+        return cls(data=decrypt(path=path, password=CURRENT_SAVE_KEY), path=path, create_backup=create_backup)
 
     def create_backup(self) -> pathlib.Path:
         now = datetime.datetime.now(datetime.UTC)
@@ -194,7 +193,7 @@ class Save:
         # merge unlockables
         self._merge_unlockables()
 
-        decrypted = to_json(self._data).encode()
+        decrypted = ES3Serializer().dumps(self._data).encode()
         with TEMP_FILE.open("wb") as fp:
             fp.write(decrypted)
 

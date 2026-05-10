@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING, Literal, TypedDict
 
 if TYPE_CHECKING:
+    from yurei.parser import ES3Dictionary
+
     from .colour import Colour
     from .difficulty import Difficulty
 
@@ -50,3 +52,8 @@ class DifficultyValue(TypedDict):
 class SpecialPlayedMaps(TypedDict):
     __type: str
     value: dict[str, int]
+
+
+class ES3DictInner(TypedDict):
+    __type: Literal["PlayerOutfit,Assembly-CSharp"]
+    value: dict[Literal["Items"], ES3Dictionary]

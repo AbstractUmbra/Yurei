@@ -13,7 +13,7 @@ GENERIC_PATTERN: re.Pattern[str] = re.compile(r"\[(?P<generic>[a-zA-Z0-9\.]+),")
 TEMPLATE: str = r"""
 from typing import TypedDict
 
-from .inner_types import Bool, ColourValue, Dict, DifficultyValue, Float, Int, List, SpecialPlayedMaps, String
+from .inner_types import Bool, ColourValue, Dict, DifficultyValue, ES3DictInner, Float, Int, List, SpecialPlayedMaps, String
 
 __all__ = ("Save",)
 
@@ -21,7 +21,6 @@ Save = TypedDict(
     "Save",
     {keyvalmap}
 )
-
 """
 
 LOOKUP = {
@@ -33,6 +32,8 @@ LOOKUP = {
     "System.String": "String",
     "System.Int32": "Int",
     "Difficulty,Assembly-CSharp": "DifficultyValue",
+    "PlayerOutfit,Assembly-CSharp": "ES3DictInner",
+    "PlayerWardrobe,Assembly-CSharp": "ES3DictInner",
 }
 PYTHON_TYPE_LOOKUP = {
     "Color": "ColourValue",
@@ -43,6 +44,8 @@ PYTHON_TYPE_LOOKUP = {
     "System.String": "str",
     "System.Int32": "int",
     "Difficulty,Assembly-CSharp": "DifficultyValue",
+    "PlayerOutfit,Assembly-CSharp": "ES3DictInner",
+    "PlayerWardrobe,Assembly-CSharp": "ES3DictInner",
 }
 # usually because of dumb json issues with cs
 SPECIAL_CASES = {"playedMaps": "SpecialPlayedMaps", "RoleType": "Int", "currentSeasonalEvent": "Int"}
