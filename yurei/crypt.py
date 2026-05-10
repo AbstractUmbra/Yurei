@@ -127,8 +127,6 @@ def decrypt[T: Any](
     # and it's always UTF-8
     resolved_data = decrypted_data.decode("utf-8")
     resolved_data = _resolve_shitty_newtonsoft_int_dict_keys(resolved_data)
-    with Path("./temp.json").open(mode="w", encoding="utf-8") as fp:
-        fp.write(resolved_data)
 
     json_data = PARSER.parse(resolved_data)  # pyright: ignore[reportUnknownMemberType]  # bad types
 
