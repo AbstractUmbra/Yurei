@@ -22,11 +22,12 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-import json
 import os
 import pathlib
 import platform
 from typing import TYPE_CHECKING, Any
+
+import orjson
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -39,22 +40,13 @@ __all__ = (
     "to_json",
 )
 
-try:
-    import orjson  # pyright: ignore[reportMissingImports] # may not exist
-except ModuleNotFoundError:
 
-    def to_json(obj: Any, /) -> str:
-        """A quick method that dumps a Python type to JSON object."""
-        return json.dumps(obj, separators=(",", ":"), ensure_ascii=True, indent=2, sort_keys=True)
+def to_json(obj: Any, /) -> str:
+    """A quick method that dumps a Python type to JSON object."""
+    return orjson.dumps(obj, option=orjson.OPT_INDENT_2 | orjson.OPT_SORT_KEYS).decode("utf-8")  # pyright: ignore[reportUnknownVariableType, reportUnknownMemberType]  # may not be installed
 
-    from_json = json.loads
-else:
 
-    def to_json(obj: Any, /) -> str:
-        """A quick method that dumps a Python type to JSON object."""
-        return orjson.dumps(obj, option=orjson.OPT_INDENT_2 | orjson.OPT_SORT_KEYS).decode("utf-8")  # pyright: ignore[reportUnknownVariableType, reportUnknownMemberType]  # may not be installed
-
-    from_json = orjson.loads  # pyright: ignore[reportUnknownVariableType, reportUnknownMemberType] # this is guarded in an if.
+from_json = orjson.loads  # pyright: ignore[reportUnknownVariableType, reportUnknownMemberType] # this is guarded in an if.
 
 
 class _MissingSentinel:
