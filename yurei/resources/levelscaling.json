@@ -1,0 +1,410 @@
+{
+  "1": {
+    "to_next": 100,
+    "cumulative": 0
+  },
+  "2": {
+    "to_next": 231,
+    "cumulative": 100
+  },
+  "3": {
+    "to_next": 337,
+    "cumulative": 331
+  },
+  "4": {
+    "to_next": 432,
+    "cumulative": 668
+  },
+  "5": {
+    "to_next": 518,
+    "cumulative": 1100
+  },
+  "6": {
+    "to_next": 601,
+    "cumulative": 1618
+  },
+  "7": {
+    "to_next": 678,
+    "cumulative": 2219
+  },
+  "8": {
+    "to_next": 753,
+    "cumulative": 2897
+  },
+  "9": {
+    "to_next": 825,
+    "cumulative": 3650
+  },
+  "10": {
+    "to_next": 895,
+    "cumulative": 4475
+  },
+  "11": {
+    "to_next": 962,
+    "cumulative": 5370
+  },
+  "12": {
+    "to_next": 1029,
+    "cumulative": 6332
+  },
+  "13": {
+    "to_next": 1094,
+    "cumulative": 7361
+  },
+  "14": {
+    "to_next": 1156,
+    "cumulative": 8455
+  },
+  "15": {
+    "to_next": 1219,
+    "cumulative": 9611
+  },
+  "16": {
+    "to_next": 1279,
+    "cumulative": 10830
+  },
+  "17": {
+    "to_next": 1339,
+    "cumulative": 12109
+  },
+  "18": {
+    "to_next": 1398,
+    "cumulative": 13448
+  },
+  "19": {
+    "to_next": 1456,
+    "cumulative": 14846
+  },
+  "20": {
+    "to_next": 1512,
+    "cumulative": 16302
+  },
+  "21": {
+    "to_next": 1569,
+    "cumulative": 17814
+  },
+  "22": {
+    "to_next": 1625,
+    "cumulative": 19383
+  },
+  "23": {
+    "to_next": 1679,
+    "cumulative": 21008
+  },
+  "24": {
+    "to_next": 1734,
+    "cumulative": 22687
+  },
+  "25": {
+    "to_next": 1787,
+    "cumulative": 24421
+  },
+  "26": {
+    "to_next": 1840,
+    "cumulative": 26208
+  },
+  "27": {
+    "to_next": 1892,
+    "cumulative": 28048
+  },
+  "28": {
+    "to_next": 1944,
+    "cumulative": 29940
+  },
+  "29": {
+    "to_next": 1996,
+    "cumulative": 31884
+  },
+  "30": {
+    "to_next": 2046,
+    "cumulative": 33880
+  },
+  "31": {
+    "to_next": 2097,
+    "cumulative": 35926
+  },
+  "32": {
+    "to_next": 2147,
+    "cumulative": 38023
+  },
+  "33": {
+    "to_next": 2197,
+    "cumulative": 40170
+  },
+  "34": {
+    "to_next": 2245,
+    "cumulative": 42367
+  },
+  "35": {
+    "to_next": 2295,
+    "cumulative": 44612
+  },
+  "36": {
+    "to_next": 2342,
+    "cumulative": 46907
+  },
+  "37": {
+    "to_next": 2391,
+    "cumulative": 49249
+  },
+  "38": {
+    "to_next": 2438,
+    "cumulative": 51640
+  },
+  "39": {
+    "to_next": 2486,
+    "cumulative": 54078
+  },
+  "40": {
+    "to_next": 2532,
+    "cumulative": 56564
+  },
+  "41": {
+    "to_next": 2579,
+    "cumulative": 59096
+  },
+  "42": {
+    "to_next": 2626,
+    "cumulative": 61675
+  },
+  "43": {
+    "to_next": 2672,
+    "cumulative": 64301
+  },
+  "44": {
+    "to_next": 2717,
+    "cumulative": 66973
+  },
+  "45": {
+    "to_next": 2763,
+    "cumulative": 69690
+  },
+  "46": {
+    "to_next": 2808,
+    "cumulative": 72453
+  },
+  "47": {
+    "to_next": 2853,
+    "cumulative": 75261
+  },
+  "48": {
+    "to_next": 2897,
+    "cumulative": 78114
+  },
+  "49": {
+    "to_next": 2942,
+    "cumulative": 81011
+  },
+  "50": {
+    "to_next": 2986,
+    "cumulative": 83953
+  },
+  "51": {
+    "to_next": 3030,
+    "cumulative": 86939
+  },
+  "52": {
+    "to_next": 3074,
+    "cumulative": 89969
+  },
+  "53": {
+    "to_next": 3117,
+    "cumulative": 93043
+  },
+  "54": {
+    "to_next": 3161,
+    "cumulative": 96160
+  },
+  "55": {
+    "to_next": 3203,
+    "cumulative": 99321
+  },
+  "56": {
+    "to_next": 3246,
+    "cumulative": 102524
+  },
+  "57": {
+    "to_next": 3289,
+    "cumulative": 105770
+  },
+  "58": {
+    "to_next": 3331,
+    "cumulative": 109059
+  },
+  "59": {
+    "to_next": 3374,
+    "cumulative": 112390
+  },
+  "60": {
+    "to_next": 3415,
+    "cumulative": 115764
+  },
+  "61": {
+    "to_next": 3457,
+    "cumulative": 119179
+  },
+  "62": {
+    "to_next": 3499,
+    "cumulative": 122636
+  },
+  "63": {
+    "to_next": 3540,
+    "cumulative": 126135
+  },
+  "64": {
+    "to_next": 3582,
+    "cumulative": 129675
+  },
+  "65": {
+    "to_next": 3623,
+    "cumulative": 133257
+  },
+  "66": {
+    "to_next": 3663,
+    "cumulative": 136880
+  },
+  "67": {
+    "to_next": 3704,
+    "cumulative": 140543
+  },
+  "68": {
+    "to_next": 3745,
+    "cumulative": 144247
+  },
+  "69": {
+    "to_next": 3786,
+    "cumulative": 147992
+  },
+  "70": {
+    "to_next": 3825,
+    "cumulative": 151778
+  },
+  "71": {
+    "to_next": 3866,
+    "cumulative": 155603
+  },
+  "72": {
+    "to_next": 3905,
+    "cumulative": 159469
+  },
+  "73": {
+    "to_next": 3946,
+    "cumulative": 163374
+  },
+  "74": {
+    "to_next": 3985,
+    "cumulative": 167320
+  },
+  "75": {
+    "to_next": 4024,
+    "cumulative": 171305
+  },
+  "76": {
+    "to_next": 4064,
+    "cumulative": 175329
+  },
+  "77": {
+    "to_next": 4104,
+    "cumulative": 179393
+  },
+  "78": {
+    "to_next": 4142,
+    "cumulative": 183497
+  },
+  "79": {
+    "to_next": 4181,
+    "cumulative": 187639
+  },
+  "80": {
+    "to_next": 4220,
+    "cumulative": 191820
+  },
+  "81": {
+    "to_next": 4259,
+    "cumulative": 196040
+  },
+  "82": {
+    "to_next": 4297,
+    "cumulative": 200299
+  },
+  "83": {
+    "to_next": 4336,
+    "cumulative": 204596
+  },
+  "84": {
+    "to_next": 4374,
+    "cumulative": 208932
+  },
+  "85": {
+    "to_next": 4412,
+    "cumulative": 213306
+  },
+  "86": {
+    "to_next": 4450,
+    "cumulative": 217718
+  },
+  "87": {
+    "to_next": 4488,
+    "cumulative": 222168
+  },
+  "88": {
+    "to_next": 4526,
+    "cumulative": 226656
+  },
+  "89": {
+    "to_next": 4564,
+    "cumulative": 231182
+  },
+  "90": {
+    "to_next": 4601,
+    "cumulative": 235746
+  },
+  "91": {
+    "to_next": 4639,
+    "cumulative": 240347
+  },
+  "92": {
+    "to_next": 4676,
+    "cumulative": 244986
+  },
+  "93": {
+    "to_next": 4713,
+    "cumulative": 249662
+  },
+  "94": {
+    "to_next": 4751,
+    "cumulative": 254375
+  },
+  "95": {
+    "to_next": 4787,
+    "cumulative": 259126
+  },
+  "96": {
+    "to_next": 4825,
+    "cumulative": 263913
+  },
+  "97": {
+    "to_next": 4861,
+    "cumulative": 268738
+  },
+  "98": {
+    "to_next": 4898,
+    "cumulative": 273599
+  },
+  "99": {
+    "to_next": 4935,
+    "cumulative": 278497
+  },
+  "100": {
+    "to_next": 4971,
+    "cumulative": 283432
+  },
+  "999": {
+    "to_next": 4971,
+    "cumulative": 4752361
+  },
+  "9999": {
+    "to_next": 0,
+    "cumulative": 710882510
+  }
+}
