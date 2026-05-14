@@ -37,7 +37,7 @@ yurei-web = "yurei.tui:web_entry"
 web = ["textual-serve>=1.1.2,<2"]
 
 [dependency-groups]
-dev = ["ruff", "textual-dev>=1.8.0,<2"]
+dev = ["pytest>=9.0.3", "ruff", "textual-dev>=1.8.0,<2"]
 
 [tool.uv]
 package = true
@@ -75,6 +75,9 @@ include = [
 name = "umbra"
 url = "https://about.abstractumbra.dev/pip/"
 explicit = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 125

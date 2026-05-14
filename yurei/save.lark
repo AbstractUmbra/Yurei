@@ -2,7 +2,7 @@
 
 ?value: object
       | array
-      | string
+      | ESCAPED_STRING     -> string
       | SIGNED_NUMBER      -> number
       | "true"             -> true
       | "false"            -> false
@@ -15,11 +15,12 @@ object : "{" [object_item ("," object_item)*] "}"
 ?object_item : member
              | dict_entry
 
-member : string ":" value
+member : es3_key ":" value
+
+?es3_key: SIGNED_NUMBER -> numeric_key
+        | ESCAPED_STRING -> string_key
 
 dict_entry : object ":" value
-
-string : ESCAPED_STRING
 
 %import common.ESCAPED_STRING
 %import common.SIGNED_NUMBER

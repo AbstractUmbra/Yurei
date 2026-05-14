@@ -36,11 +36,16 @@ class ES3Serializer:
 
         return str(obj)
 
-    def _emit_object(self, obj: dict[str, Any]) -> str:
+    def _emit_key(self, obj: str | int) -> str:
+        if isinstance(obj, int):
+            return str(obj)
+        return json.dumps(obj)
+
+    def _emit_object(self, obj: dict[Any, Any]) -> str:
         members: list[str] = []
 
         for key, value in obj.items():
-            members.append(f"{json.dumps(key)}:{self._emit(value)}")
+            members.append(f"{self._emit_key(key)}:{self._emit(value)}")
 
         return "{" + ",".join(members) + "}"
 

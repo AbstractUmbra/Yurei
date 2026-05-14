@@ -46,6 +46,12 @@ class ES3Transformer(Transformer[ES3Value, Any]):
     def member(self, items: list[Any]) -> tuple[Any, Any]:
         return (items[0], items[1])
 
+    def numeric_key(self, token: list[Token]) -> int:
+        return int(token[0].value)
+
+    def string_key(self, token: list[Token]) -> str:
+        return token[0].value[1:-1]
+
     def dict_entry(self, items: list[Any]) -> DictEntry:
         return DictEntry(key=items[0], value=items[1])
 

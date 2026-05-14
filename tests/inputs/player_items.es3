@@ -1,0 +1,117 @@
+{
+    "LocalPlayerOutfit": {
+        "__type": "PlayerOutfit,Assembly-CSharp",
+        "value": {
+            "Items": {
+                {
+                    "low": 16,
+                    "high": 0
+                }: {
+                    "guid": {
+                        "value": "722be916-7280-4ca7-b327-d8809ce035fd"
+                    },
+                    "materialOption": 0
+                },
+                {
+                    "low": 8,
+                    "high": 0
+                }: {
+                    "guid": {
+                        "value": "722be916-7280-4ca7-b327-d8809ce035fd"
+                    },
+                    "materialOption": 0
+                },
+                {
+                    "low": 1024,
+                    "high": 0
+                }: {
+                    "guid": {
+                        "value": "ef62365c-a1ad-4a12-9605-203e89b01ec3"
+                    },
+                    "materialOption": 0
+                },
+                {
+                    "low": 256,
+                    "high": 0
+                }: {
+                    "guid": {
+                        "value": "ef62365c-a1ad-4a12-9605-203e89b01ec3"
+                    },
+                    "materialOption": 0
+                },
+                {
+                    "low": 512,
+                    "high": 0
+                }: {
+                    "guid": {
+                        "value": "ef62365c-a1ad-4a12-9605-203e89b01ec3"
+                    },
+                    "materialOption": 0
+                },
+                {
+                    "low": 128,
+                    "high": 0
+                }: {
+                    "guid": {
+                        "value": "3d8494a7-9d4c-489e-be97-8a6986c728d2"
+                    },
+                    "materialOption": 0
+                },
+                {
+                    "low": 64,
+                    "high": 0
+                }: {
+                    "guid": {
+                        "value": "452dd4d1-5e6b-4775-923d-f896f97946c5"
+                    },
+                    "materialOption": 0
+                },
+                {
+                    "low": 67108864,
+                    "high": 0
+                }: {
+                    "guid": {
+                        "value": "6b7c0561-65bf-4907-ad36-287b71726918"
+                    },
+                    "materialOption": 0
+                },
+                {
+                    "low": 268435456,
+                    "high": 0
+                }: {
+                    "guid": {
+                        "value": "7ac0c8d4-a3f5-4bd3-8763-d43ec7029b4c"
+                    },
+                    "materialOption": 0
+                },
+                {
+                    "low": 134217728,
+                    "high": 0
+                }: {
+                    "guid": {
+                        "value": "217bd28d-9e57-4d80-b1e9-ac519ca8d642"
+                    },
+                    "materialOption": 0
+                },
+                {
+                    "low": 1,
+                    "high": 0
+                }: {
+                    "guid": {
+                        "value": "acaed4b3-29b2-4015-9c5a-ace1f9cf76e5"
+                    },
+                    "materialOption": 0
+                },
+                {
+                    "low": 4,
+                    "high": 0
+                }: {
+                    "guid": {
+                        "value": "29e31646-23dc-447f-a7f5-1b258070ae77"
+                    },
+                    "materialOption": 0
+                }
+            }
+        }
+    }
+}
