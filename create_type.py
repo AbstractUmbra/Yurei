@@ -7,7 +7,7 @@ from typing import Any
 
 from yurei.crypt import decrypt
 from yurei.types_ import Save as SaveType
-from yurei.utils import get_save_password, to_json
+from yurei.utils import get_save_password
 
 GENERIC_PATTERN: re.Pattern[str] = re.compile(r"\[(?P<generic>[a-zA-Z0-9\.]+),")
 TEMPLATE: str = r"""
@@ -54,10 +54,12 @@ CURRENT_SAVE_KEY = get_save_password(password_file=(pathlib.Path(__file__).paren
 
 class ProgramNamespace(argparse.Namespace):
     file: pathlib.Path
+    output_file: pathlib.Path | None
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--file", type=pathlib.Path, required=True, dest="file")
+parser.add_argument("-of", "--output-file", type=pathlib.Path, required=False, dest="output_file")
 
 args = parser.parse_args(namespace=ProgramNamespace())
 
@@ -93,7 +95,7 @@ def create_json() -> dict[str, Any]:
 
     # data is json
 
-    pathlib.Path("decrypted.json").write_text(to_json(data), encoding="utf-8")
+    pathlib.Path("decrypted.json").write_text(str(data), encoding="utf-8")
 
     return dict(sorted(data.items()))
 
@@ -115,11 +117,12 @@ def parse_json(input_: dict[str, Any]) -> str:
 
 
 def main() -> None:
+    output_path = args.output_file or pathlib.Path("yurei/types_/save.py")
     json = create_json()
     type_ = TEMPLATE.format_map({"keyvalmap": parse_json(json)})
-    pathlib.Path("yurei/types_/save.py").write_text(type_, encoding="utf-8")
+    output_path.write_text(type_, encoding="utf-8")
 
-    sys.exit(subprocess.Popen("ruff format yurei/types_/save.py", shell=True).returncode)  # noqa: S602, S607 # this is used as preflight on trusted input
+    sys.exit(subprocess.Popen(f"ruff format {output_path}", shell=True).returncode)  # noqa: S602 # this is used as preflight on trusted input
 
 
 if __name__ == "__main__":
