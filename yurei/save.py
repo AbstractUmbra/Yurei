@@ -8,9 +8,10 @@ from typing import TYPE_CHECKING, Any, Final, Literal, Self, cast
 from .crypt import decrypt, encrypt
 from .data import XPLevel
 from .enums import Equipment
+from .parser import PARSER
 from .serializer import ES3Serializer
 from .unlockable import UnlockableManager
-from .utils import MISSING, from_json, get_save_password, resolve_save_path, to_json
+from .utils import MISSING, get_save_password, resolve_save_path
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -172,10 +173,10 @@ class Save:
         return getattr(self.unlockable_manager, unlockable)
 
     def to_json_string(self) -> str:
-        return to_json(self._data)
+        return ES3Serializer().dumps(self._data)
 
     def from_json_string(self, input_: str, /) -> None:
-        self._data = from_json(input_)
+        self._data = PARSER.parse(input_)  # pyright: ignore[reportAttributeAccessIssue, reportUnknownMemberType] # lark types
 
     def _merge_unlockables(self) -> None:
         for attr in self.unlockable_manager.__slots__:
