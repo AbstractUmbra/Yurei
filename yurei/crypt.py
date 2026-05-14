@@ -47,10 +47,6 @@ __all__ = (
 )
 
 
-def _resolve_shitty_newtonsoft_int_dict_keys(input_: str) -> str:
-    return SHITTY_NEWTONSOFT_SUB_PATTERN.sub(r'"\1":', input_)
-
-
 def _strip_shitty_type_kv(input_: dict[str, Any] | list[str] | str) -> dict[str, Any] | list[str] | str:
     if isinstance(input_, dict):
         return {k: _strip_shitty_type_kv(v) for k, v in input_.items() if k != "__type"}
@@ -124,7 +120,6 @@ def decrypt[T: Any](
 
     # and it's always UTF-8
     resolved_data = decrypted_data.decode("utf-8")
-    resolved_data = _resolve_shitty_newtonsoft_int_dict_keys(resolved_data)
 
     json_data = PARSER.parse(resolved_data)  # pyright: ignore[reportUnknownMemberType]  # bad types
 

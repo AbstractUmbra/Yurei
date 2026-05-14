@@ -7,22 +7,32 @@ import yurei
 
 
 class ProgramNamespace(argparse.Namespace):
-    file: pathlib.Path
+    file: pathlib.Path | None
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-f", "--file", type=pathlib.Path, required=True, dest="file")
+parser.add_argument("-f", "--file", type=pathlib.Path, required=False, dest="file")
 
 args = parser.parse_args(namespace=ProgramNamespace())
 
-if not args.file.exists():
-    msg_ = f"Provided file {args.file} could not be found."
-    raise FileNotFoundError(msg_)
 
-save = yurei.Save.from_path(args.file)
+def do_removal(save: yurei.Save) -> None:
+    with save:
+        save._data["recentPlayerIDS"]["value"] = []
+        save._data["recentPlayerNames"]["value"] = []
+        save._data["recentPlayerPlatformIDS"]["value"] = []
+        save._data["recentPlayerPlatforms"]["value"] = []
 
-with save:
-    save._data["recentPlayerIDS"]["value"] = []
-    save._data["recentPlayerNames"]["value"] = []
-    save._data["recentPlayerPlatformIDS"]["value"] = []
-    save._data["recentPlayerPlatforms"]["value"] = []
+
+def main() -> None:
+    if args.file:
+        save = yurei.Save.from_path(args.file)
+        do_removal(save)
+    else:
+        save_files = (pathlib.Path(__file__).parent.parent / "test_files").glob("*.txt")
+        for save in save_files:
+            do_removal(yurei.Save.from_path(save))
+
+
+if __name__ == "__main__":
+    main()
