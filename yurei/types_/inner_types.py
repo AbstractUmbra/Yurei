@@ -51,7 +51,7 @@ class DifficultyValue(TypedDict):
 
 class SpecialPlayedMaps(TypedDict):
     __type: str
-    value: dict[str, int]
+    value: dict[int, int]
 
 
 class ES3DictInner(TypedDict):
