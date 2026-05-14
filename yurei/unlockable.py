@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Literal, final
+from typing import TYPE_CHECKING, Literal, Self, final
 
 if TYPE_CHECKING:
     from .save import Save
@@ -16,6 +16,7 @@ type CURRENT_UNLOCKABLES = Literal[
     "moneybags",
     "ghost_in_the_machine",
     "tanglewood",
+    "alan_wake",
 ]
 type CURRENT_UNLOCKABLES_DATA_KEY = Literal[
     "FarmhouseFieldwork",
@@ -27,6 +28,7 @@ type CURRENT_UNLOCKABLES_DATA_KEY = Literal[
     "NellsDiner",
     "Moneybags",
     "Tanglewood",
+    "AWNurseryRhymePuzzle",
 ]
 LOOKUP: dict[str, CURRENT_UNLOCKABLES] = {
     "Farmhouse Fieldwork": "farmhouse_fieldwork",
@@ -37,6 +39,7 @@ LOOKUP: dict[str, CURRENT_UNLOCKABLES] = {
     "Nell's Diner": "nells_diner",
     "Moneybags": "moneybags",
     "Tanglewood": "tanglewood",
+    "Alan Wake Nursery Rhyme": "alan_wake",
 }
 REVERSE_LOOKUP: dict[CURRENT_UNLOCKABLES, str] = {v: k for k, v in LOOKUP.items()}
 DATA_KEY_TO_PRETTY_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, str] = {
@@ -49,6 +52,7 @@ DATA_KEY_TO_PRETTY_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, str] = {
     "NellsDiner": "Nell's Diner",
     "Moneybags": "Moneybags",
     "Tanglewood": "Tanglewood",
+    "AWNurseryRhymePuzzle": "Alan Wake Nursery Rhyme Puzzle",
 }
 DATA_KEY_TO_ATTRIBUTE_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, CURRENT_UNLOCKABLES] = {
     "FarmhouseFieldwork": "farmhouse_fieldwork",
@@ -60,13 +64,12 @@ DATA_KEY_TO_ATTRIBUTE_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, CURRENT_UNLOCKA
     "dinerGhostInTheMachine": "ghost_in_the_machine",
     "Moneybags": "moneybags",
     "Tanglewood": "tanglewood",
+    "AWNurseryRhymePuzzle": "alan_wake",
 }
 
 
-@final
 class Achievement:
-    MAX_PROGRESSION_VALUE: int = 50
-    __slots__ = ("_completed", "_progression", "_received", "name", "no_progression_count")
+    __slots__ = ("_completed", "_progression", "_received", "max_progression_value", "name", "no_progression_count")
 
     def __init__(
         self,
@@ -77,21 +80,31 @@ class Achievement:
         progression: int,
         received: int | bool,
         no_progression_count: bool = False,
-        max_progression_value: int | None = None,
+        max_progression_value: int = 50,
     ) -> None:
         self.name: CURRENT_UNLOCKABLES_DATA_KEY = name
         self._completed = int(completed)
         self._received = int(received)
         self._progression = progression
         self.no_progression_count = no_progression_count
-        if max_progression_value:
-            self.__class__.MAX_PROGRESSION_VALUE = max_progression_value
+        self.max_progression_value = max_progression_value
 
     def __repr__(self) -> str:
         return (
             f"<Achievement {self.pretty_name} completed={self.completed} "
             f"received={self.received} progression={self.progression}>"
         )
+
+    @classmethod
+    def from_alan_wake(cls, progress: int) -> Self:
+        completed = progress == 3
+        return cls(
+            "AWNurseryRhymePuzzle", completed=completed, progression=progress, received=False, max_progression_value=3
+        )
+
+    @property
+    def _alan_wake(self) -> bool:
+        return self.name == "AWNurseryRhymePuzzle"
 
     @property
     def pretty_name(self) -> str:
@@ -103,10 +116,14 @@ class Achievement:
 
     @property
     def completed(self) -> bool:
+        if self._alan_wake:
+            return self._progression == 3
         return bool(self._completed)
 
     @completed.setter
     def completed(self, value: bool | int) -> None:
+        if self._alan_wake:
+            self._progression = 3
         self._completed = int(value)
 
     @property
@@ -119,6 +136,8 @@ class Achievement:
 
     @property
     def progression(self) -> bool | int:
+        if self._alan_wake:
+            return self._progression
         return bool(self._progression) if self.no_progression_count else self._progression
 
     @progression.setter
@@ -129,6 +148,9 @@ class Achievement:
             self._progression = int(value)
 
     def to_data(self) -> dict[str, Int]:
+        if self.name == "AWNurseryRhymePuzzle":
+            return {f"{self.name}Progress": {"__type": "int", "value": int(self.progression)}}
+
         return {
             f"{self.name}Completed": {"__type": "int", "value": self._completed},
             f"{self.name}Received": {"__type": "int", "value": self._received},
@@ -140,6 +162,7 @@ class Achievement:
 class UnlockableManager:
     __slots__ = (
         "_save",
+        "alan_wake",
         "farmhouse_fieldwork",
         "ghost_in_the_machine",
         "lighthouse_ferrymen",
@@ -209,6 +232,7 @@ class UnlockableManager:
             received=save.get_value("TanglewoodReceived", int, default=0),
             max_progression_value=50,
         )
+        self.alan_wake = Achievement.from_alan_wake(save.get_value("AWNurseryRhymePuzzleProgress", int, default=0))
 
     def __contains__(self, key: str, /) -> bool:
         return hasattr(self, key)

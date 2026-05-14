@@ -122,7 +122,7 @@ class AchievementManageGrid(Grid):
         if completed.value:
             self.achievement.completed = True
             self.achievement.progression = (
-                True if self.achievement.no_progression_count else self.achievement.MAX_PROGRESSION_VALUE
+                True if self.achievement.no_progression_count else self.achievement.max_progression_value
             )
         if received.value:
             self.achievement.received = True
