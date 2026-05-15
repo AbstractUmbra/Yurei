@@ -95,7 +95,7 @@ def create_json() -> dict[str, Any]:
 
     # data is json
 
-    pathlib.Path("decrypted.json").write_text(str(data), encoding="utf-8")
+    pathlib.Path("create_type-decrypted.json").write_text(str(data), encoding="utf-8")
 
     return dict(sorted(data.items()))
 

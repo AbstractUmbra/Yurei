@@ -29,6 +29,7 @@ class Equipment(StrEnum):
 
 
 class Ghost(StrEnum):
+    aswang = "Aswang"
     banshee = "Banshee"
     dayan = "Dayan"
     demon = "Demon"
@@ -37,6 +38,7 @@ class Ghost(StrEnum):
     goryo = "Goryo"
     hantu = "Hantu"
     jinn = "Jinn"
+    kormos = "Kormos"
     mare = "Mare"
     mimic = "Mimic"
     moroi = "Moroi"
