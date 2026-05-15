@@ -5,7 +5,8 @@ import logging
 import pathlib
 from typing import TYPE_CHECKING, Any, Final, Literal, Self, cast
 
-from .crypt import decrypt, encrypt
+from py_es3 import decrypt, encrypt
+
 from .data import XPLevel
 from .enums import Equipment
 from .parser import PARSER
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
 
 __all__ = ("Save",)
 
-TEMP_FILE = pathlib.Path(__file__).parent.parent / ("./_previously_decrypted_file.json")
+TEMP_FILE = pathlib.Path(__file__).parent.parent / "./_temp_save_dump.json"
 LOGGER = logging.getLogger(__name__)
 EQUIPMENT: set[str] = {e.value for e in Equipment}
 EQUIPMENT_TIER_LOOKUP: dict[int, str] = {1: "One", 2: "Two", 3: "Three"}
@@ -71,13 +72,19 @@ class Save:
     def from_path(cls, path: pathlib.Path, *, create_backup: bool = True) -> Self:
         data = path.read_bytes()
 
-        return cls(data=decrypt(data=data, password=CURRENT_SAVE_KEY), path=path, create_backup=create_backup)
+        decrypted = decrypt(data=data, password=CURRENT_SAVE_KEY)
+        parsed: SaveType = PARSER.parse(decrypted)  # pyright: ignore[reportUnknownMemberType, reportAssignmentType] # lark types
+
+        return cls(data=parsed, path=path, create_backup=create_backup)
 
     @classmethod
     def from_default_path(cls, *, create_backup: bool = True) -> Self:
         path = resolve_save_path()
 
-        return cls(data=decrypt(path=path, password=CURRENT_SAVE_KEY), path=path, create_backup=create_backup)
+        decrypted = decrypt(path=path, password=CURRENT_SAVE_KEY)
+        parsed: SaveType = PARSER.parse(decrypted)  # pyright: ignore[reportUnknownMemberType, reportAssignmentType] # lark types
+
+        return cls(data=parsed, path=path, create_backup=create_backup)
 
     def create_backup(self) -> pathlib.Path:
         now = datetime.datetime.now(datetime.UTC)
