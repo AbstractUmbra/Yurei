@@ -88,7 +88,6 @@ target-version = "py314"
 extend-exclude = ["preflight/get_xp_scaling.py"] # it's a one time runner
 
 [tool.ruff.lint]
-preview = true
 select = ["ALL"]
 ignore = [
     "ANN401",
@@ -125,6 +124,10 @@ unfixable = [
     "E501", # line length handled in other ways by ruff format
     "ERA",  # Don't delete commented out code
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"main.py" = ["T201"]          # allow printing
+"examples/**/*.py" = ["T201"] # allow printing
 
 [tool.ruff.format]
 quote-style = "double"

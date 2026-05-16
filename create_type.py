@@ -1,13 +1,17 @@
 import argparse
 import pathlib
 import re
-import subprocess  # noqa: S404 # this is used as preflight on trusted input
+import subprocess
 import sys
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from yurei.crypt import decrypt
-from yurei.types_ import Save as SaveType
+from py_es3 import decrypt
+
+from yurei.parser import PARSER
 from yurei.utils import get_save_password
+
+if TYPE_CHECKING:
+    from yurei.types_ import Save as SaveType
 
 GENERIC_PATTERN: re.Pattern[str] = re.compile(r"\[(?P<generic>[a-zA-Z0-9\.]+),")
 TEMPLATE: str = r"""
@@ -91,13 +95,14 @@ def _resolve_type(inp: str) -> str:
 
 
 def create_json() -> dict[str, Any]:
-    data = decrypt(path=args.file, password=CURRENT_SAVE_KEY, strip_type_key=False, return_type=SaveType)
+    data = decrypt(path=args.file, password=CURRENT_SAVE_KEY)
+    parsed: SaveType = PARSER.parse(data)  # pyright: ignore[reportAssignmentType, reportUndefinedVariable, reportUnknownMemberType]
 
     # data is json
 
-    pathlib.Path("create_type-decrypted.json").write_text(str(data), encoding="utf-8")
+    pathlib.Path("create_type-decrypted.json").write_text(data, encoding="utf-8")
 
-    return dict(sorted(data.items()))
+    return dict(sorted(parsed.items()))
 
 
 def parse_json(input_: dict[str, Any]) -> str:

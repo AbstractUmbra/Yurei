@@ -34,4 +34,4 @@ def unlock_all_tier_2_equipment() -> None:
 
     # when we get to this print we'll have "exited" the context manager
     # this means that we'll create a backup of our save, and then write our edits in.
-    print("Unlocked all equipment at tier 2.")  # noqa: T201
+    print("Unlocked all equipment at tier 2.")

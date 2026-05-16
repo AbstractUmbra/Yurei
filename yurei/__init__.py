@@ -11,8 +11,8 @@ from .enums import *
 from .save import Save
 from .tui import *
 
-CURRENT_SAVE_KEY: str = "t36gref9u84y7f43g"  # noqa: RUF067 # using this complete package access
+CURRENT_SAVE_KEY: str = "t36gref9u84y7f43g"
 
 __all__ = ("CURRENT_SAVE_KEY", "Save", "utils")
 
-logging.getLogger(__name__).addHandler(logging.NullHandler())  # noqa: RUF067 # required
+logging.getLogger(__name__).addHandler(logging.NullHandler())
