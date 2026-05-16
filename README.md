@@ -24,7 +24,7 @@ This project will likely never exist on PyPi (or pip for those who call it that)
 ```sh
 pip install 'git+https://github.com/AbstractUmbra/Yurei'
 # or
-uv add 'git+https://github.com/AbstractUmbra/Yurei'
+uv add 'yurei @ git+https://github.com/AbstractUmbra/Yurei'
 # etc
 ```
 
