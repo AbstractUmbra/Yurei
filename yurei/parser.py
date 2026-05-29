@@ -1,6 +1,6 @@
 import pathlib
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any, Generator, Literal
 
 from lark import Lark, Token, Transformer, v_args  # pyright: ignore[reportUnknownVariableType] # lark types aren't complete
 
@@ -10,14 +10,14 @@ __all__ = ("PARSER", "ES3Transformer")
 
 
 @dataclass
-class DictEntry:
-    key: JSONValue
-    value: JSONValue
+class DictEntry[KeyT = JSONValue, ValueT = JSONValue]:
+    key: KeyT
+    value: ValueT
 
 
 @dataclass
-class ES3Dictionary:
-    entries: list[DictEntry]
+class ES3Dictionary[KeyT = JSONValue, ValT = JSONValue]:
+    entries: list[DictEntry[KeyT, ValT]]
 
 
 class ES3Transformer(Transformer[ES3Value, Any]):
