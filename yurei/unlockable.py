@@ -16,6 +16,7 @@ type CURRENT_UNLOCKABLES = Literal[
     "moneybags",
     "ghost_in_the_machine",
     "tanglewood",
+    "willow",
     "alan_wake",
 ]
 type CURRENT_UNLOCKABLES_DATA_KEY = Literal[
@@ -29,6 +30,7 @@ type CURRENT_UNLOCKABLES_DATA_KEY = Literal[
     "Moneybags",
     "Tanglewood",
     "AWNurseryRhymePuzzle",
+    "Willow",
 ]
 LOOKUP: dict[str, CURRENT_UNLOCKABLES] = {
     "Farmhouse Fieldwork": "farmhouse_fieldwork",
@@ -39,6 +41,7 @@ LOOKUP: dict[str, CURRENT_UNLOCKABLES] = {
     "Nell's Diner": "nells_diner",
     "Moneybags": "moneybags",
     "Tanglewood": "tanglewood",
+    "Willow": "willow",
     "Alan Wake Nursery Rhyme": "alan_wake",
 }
 REVERSE_LOOKUP: dict[CURRENT_UNLOCKABLES, str] = {v: k for k, v in LOOKUP.items()}
@@ -52,6 +55,7 @@ DATA_KEY_TO_PRETTY_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, str] = {
     "NellsDiner": "Nell's Diner",
     "Moneybags": "Moneybags",
     "Tanglewood": "Tanglewood",
+    "Willow": "Willow",
     "AWNurseryRhymePuzzle": "Alan Wake Nursery Rhyme Puzzle",
 }
 DATA_KEY_TO_ATTRIBUTE_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, CURRENT_UNLOCKABLES] = {
@@ -64,6 +68,7 @@ DATA_KEY_TO_ATTRIBUTE_LOOKUP: dict[CURRENT_UNLOCKABLES_DATA_KEY, CURRENT_UNLOCKA
     "dinerGhostInTheMachine": "ghost_in_the_machine",
     "Moneybags": "moneybags",
     "Tanglewood": "tanglewood",
+    "Willow": "willow",
     "AWNurseryRhymePuzzle": "alan_wake",
 }
 
@@ -172,6 +177,7 @@ class UnlockableManager:
         "ranger_challenge",
         "sunny_meadows_survival",
         "tanglewood",
+        "willow",
     )
 
     def __init__(self, save: Save, /) -> None:
@@ -233,6 +239,13 @@ class UnlockableManager:
             max_progression_value=50,
         )
         self.alan_wake = Achievement.from_alan_wake(save.get_value("AWNurseryRhymePuzzleProgress", int, default=0))
+        self.willow = Achievement(
+            "Willow",
+            completed=save.get_value("WillowCompleted", int, default=0),
+            progression=save.get_value("WillowProgression", int, default=0),
+            received=save.get_value("WillowReceived", int, default=0),
+            max_progression_value=50,
+        )
 
     def __contains__(self, key: str, /) -> bool:
         return hasattr(self, key)
