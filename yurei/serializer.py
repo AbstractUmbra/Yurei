@@ -14,10 +14,10 @@ class ES3Serializer:
 
     def _emit(self, obj: Any) -> str:  # noqa: PLR0911 # the joys of recursive factories
         if isinstance(obj, ES3Dictionary):
-            return self._emit_es3_dictionary(obj)
+            return self._emit_es3_dictionary(obj)  # pyright: ignore[reportUnknownArgumentType] # we don't need generics here
 
         if isinstance(obj, DictEntry):
-            return self._emit_dict_entry(obj)
+            return self._emit_dict_entry(obj)  # pyright: ignore[reportUnknownArgumentType] # we don't need generics here
 
         if isinstance(obj, dict):
             return self._emit_object(obj)  # pyright: ignore[reportUnknownArgumentType] # the joys of recursive factories

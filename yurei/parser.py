@@ -1,6 +1,6 @@
 import pathlib
 from dataclasses import dataclass
-from typing import Any, Generator, Literal
+from typing import Any, Literal
 
 from lark import Lark, Token, Transformer, v_args  # pyright: ignore[reportUnknownVariableType] # lark types aren't complete
 

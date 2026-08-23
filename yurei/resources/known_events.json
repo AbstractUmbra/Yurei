@@ -1,0 +1,58 @@
+{
+  "halloween23Complete": {
+    "__type": "int",
+    "value": 1
+  },
+  "10 Ridgeview CourtHalloweenComplete": {
+    "__type": "int",
+    "value": 1
+  },
+  "10 Ridgeview CourtEaster2023Complete": {
+    "__type": "int",
+    "value": 1
+  },
+  "13 Willow StreetHalloweenComplete": {
+    "__type": "int",
+    "value": 1
+  },
+  "13 Willow StreetEaster2023Complete": {
+    "__type": "int",
+    "value": 1
+  },
+  "42 Edgefield RoadHalloweenComplete": {
+    "__type": "int",
+    "value": 1
+  },
+  "42 Edgefield RoadEaster2023Complete": {
+    "__type": "int",
+    "value": 1
+  },
+  "6 Tanglewood DriveHalloweenComplete": {
+    "__type": "int",
+    "value": 1
+  },
+  "6 Tanglewood DriveEaster2023Complete": {
+    "__type": "int",
+    "value": 1
+  },
+  "Bleasdale FarmhouseHalloweenComplete": {
+    "__type": "int",
+    "value": 1
+  },
+  "Bleasdale FarmhouseEaster2023Complete": {
+    "__type": "int",
+    "value": 1
+  },
+  "Camp WoodwindHalloweenComplete": {
+    "__type": "int",
+    "value": 1
+  },
+  "Grafton FarmhouseHalloweenComplete": {
+    "__type": "int",
+    "value": 1
+  },
+  "Grafton FarmhouseEaster2023Complete": {
+    "__type": "int",
+    "value": 1
+  }
+}

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import json
 import logging
 import pathlib
 from typing import TYPE_CHECKING, Any, Final, Literal, Self, cast
@@ -27,7 +28,9 @@ LOGGER = logging.getLogger(__name__)
 EQUIPMENT: set[str] = {e.value for e in Equipment}
 EQUIPMENT_TIER_LOOKUP: dict[int, str] = {1: "One", 2: "Two", 3: "Three"}
 CURRENT_SAVE_KEY = get_save_password(password_file=(pathlib.Path(__file__).parent / "resources" / "save_password"))
-LEVEL_SCALES_FILE = pathlib.Path(__file__).parent / "resources" / "levelscaling.json"
+RESOURCES_DIR = pathlib.Path(__file__).parent / "resources"
+LEVEL_SCALES_FILE = RESOURCES_DIR / "levelscaling.json"
+KNOWN_EVENTS_FILE = RESOURCES_DIR / "known_events.json"
 
 
 class Save:
@@ -178,6 +181,10 @@ class Save:
 
     def manage_unlockable(self, unlockable: CURRENT_UNLOCKABLES) -> Achievement:
         return getattr(self.unlockable_manager, unlockable)
+
+    def unlock_all_known_events(self) -> None:
+        event_data_json = json.loads(KNOWN_EVENTS_FILE.read_text())
+        self._data |= event_data_json
 
     def to_json_string(self) -> str:
         return ES3Serializer().dumps(self._data)
